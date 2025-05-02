@@ -1,0 +1,61 @@
+$tablet-screen: 475px;
+$big-tablet-screen: 768px;
+$laptop-screen: 1024px;
+$desktop-screen: 1440px;
+$super-big-screen: 2400px;
+
+//COLORS
+$base-color: #f7f7f7;
+$primary-color: #fffdfa;
+$secondary-color: #00065c;
+$accent-color: #4885de;
+$text-color: #232323;
+$text-color-alt: $primary-color;
+$error-color: #bb0025;
+$success-color: #00a86b;
+$loading-color: $secondary-color;
+$pink-color: #ff91af;
+$blue-color: #8082ab;
+
+$text-color-faded: rgba($text-color, 0.4);
+$primary-color-faded: rgba($primary-color, 0.5);
+$secondary-color-faded: rgba($secondary-color, 0.4);
+$accent-color-faded: rgba($accent-color, 0.4);
+$error-color-faded: rgba($error-color, 0.2);
+$success-color-faded: rgba($success-color, 0.4);
+$loading-color-faded: rgba($loading-color, 0.4);
+$pink-color-faded: rgba($pink-color, 0.6);
+$blue-color-faded: rgba($blue-color, 0.6);
+$border-color-faded: rgba($text-color, 0.06);
+$transparent-light: rgba($primary-color, 0.1);
+$transparent-dark: rgba($text-color, 0.1);
+
+//BORDERS
+$radius: 32px;
+
+//SHADOWS
+$shadow-black: 0px 0px 10px rgba(0, 0, 0, 0.02);
+$shadow-primary: 0px 0px 10px rgba($primary-color, 0.05);
+$shadow-secondary: 0px 0px 10px rgba($secondary-color, 0.05);
+$shadow-text: 0px 0px 2px $text-color;
+$shadow-text-secondary: 0px 0px 2px $secondary-color;
+$shadow-success: 0px 0px 10px rgba($success-color, 0.05);
+$shadow-error: 0px 0px 10px rgba($error-color, 0.05);
+$shadow-loading: 0px 0px 10px rgba($loading-color, 0.05);
+
+// TYPO
+$line-height: 1.15;
+$regular: 400;
+$medium: 500;
+$semi-bold: 600;
+$extra-bold: 800;
+
+//GOLDEN NUMBER
+$golden-number: 1.618;
+
+//FONT SIZES
+$small-text: 0.8rem;
+$subtitles: calc(1rem * $golden-number);
+$titles: calc($subtitles * $golden-number);
+
+$blur: 2px;

@@ -1,0 +1,18 @@
+export const colors = {
+  "base-color": "#f7f7f7",
+  "primary-color": "#FFFDFA",
+  "secondary-color": "#4885de",
+  "accent-color": "#8082AB",
+  "text-color": "#232323",
+  "error-color": "#bb0025",
+  "base-color-faded": "#f7f7f750",
+  "secondary-color-faded": "#4885de50",
+  "primary-color-faded": "#FFFDFA50",
+  "text-color-faded": "#23232350",
+  "accent-color-faded": "#8082AB50",
+  "transparent-dark": "23232310",
+  "transparent-light": "fffdfa10",
+  "success-color": "#00a86b",
+  "loading-color": "secondary-color",
+  "pink-color": "#ff91af",
+};
