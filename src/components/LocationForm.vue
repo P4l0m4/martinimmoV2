@@ -6,7 +6,6 @@ import { useAddressStore } from "@/stores/addressStore";
 const store = useAddressStore();
 const config = useRuntimeConfig();
 
-const address = ref("");
 const root = ref<HTMLElement | null>(null);
 
 const emit = defineEmits(["refresh"]);
@@ -35,9 +34,15 @@ onMounted(async () => {
 
   root.value.appendChild(pac);
 
-  (root.value as HTMLElement).addEventListener("click", () => pac.focus(), {
-    passive: true,
-  });
+  (root.value as HTMLElement).addEventListener(
+    "click",
+    () => {
+      pac.focus();
+    },
+    {
+      passive: true,
+    }
+  );
 
   pac.addEventListener("gmp-select", async (ev: any) => {
     const prediction = ev.placePrediction;
@@ -64,12 +69,10 @@ onMounted(async () => {
 
 <template>
   <form class="location-form">
-    <span>{{ address }}</span>
     <div
       ref="root"
       class="location-form__input-field"
       data-placeholder="Adresse du bien"
-      :class="{ filled: !!address }"
     ></div>
     <NuxtLink
       to="/estimation-en-ligne-bien-immobilier"
@@ -87,7 +90,7 @@ onMounted(async () => {
   display: flex;
   background-color: $primary-color;
   border-radius: $radius;
-  padding: 0.25rem;
+  padding: 1rem 0.25rem 0.25rem 0.25rem;
   width: 100%;
   align-items: center;
   flex-direction: column;
@@ -95,6 +98,7 @@ onMounted(async () => {
   gap: 0.5rem;
 
   @media (min-width: $big-tablet-screen) {
+    padding: 0.25rem;
     max-height: 68.4px;
     width: 500px;
     flex-direction: row;
@@ -117,35 +121,16 @@ onMounted(async () => {
       max-width: 350px;
     }
 
-    &::before {
-      content: attr(data-placeholder);
-      position: absolute;
-      inset: 0 16px 0 16px;
-      line-height: 38px;
-      width: fit-content;
-      white-space: nowrap;
-      color: $text-color-faded;
-      pointer-events: none;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      z-index: 1;
-    }
-
     &::after {
       content: "";
       position: absolute;
       top: 0rem;
       left: 0.75rem;
-      z-index: 1;
+      z-index: 1000003; // forgive me, Google gives me no choice
       width: calc(100% - 1.5rem);
       height: 38px;
       pointer-events: none;
       border: $primary-color solid 6px;
-    }
-
-    &.filled::before {
-      opacity: 0;
     }
   }
 
