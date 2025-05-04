@@ -8,27 +8,27 @@ const cfg = useRuntimeConfig();
 const store = useAddressStore();
 const address = ref(store.readFromLocalStorage());
 
-const surface = ref(0);
-const pieces = ref(0);
-const typeLocal = ref("");
-const travaux = ref(0);
-const DPE = ref("");
+const surface = ref();
+const pieces = ref();
+const typeLocal = ref();
+const expectedRenovationDiscount = ref(0);
+const DPE = ref();
 const isAdressInDowntown = ref(false);
 const equipments = ref<string[]>([]);
 
-const mapSrc = computed(() => {
-  if (!address.value?.latLng) return null;
-  const { lat, lng } = address.value.latLng;
-  const size = isMobile() ? "400x400" : "700x700";
-  return (
-    "https://maps.googleapis.com/maps/api/staticmap" +
-    `?key=${cfg.public.MAPS_PLACES_API_KEY}` +
-    `&center=${lat},${lng}` +
-    "&zoom=18" +
-    `&size=${size}&scale=2` +
-    `&markers=color:red|${lat},${lng}`
-  );
-});
+// const mapSrc = computed(() => {
+//   if (!address.value?.latLng) return null;
+//   const { lat, lng } = address.value.latLng;
+//   const size = isMobile() ? "400x400" : "700x700";
+//   return (
+//     "https://maps.googleapis.com/maps/api/staticmap" +
+//     `?key=${cfg.public.MAPS_PLACES_API_KEY}` +
+//     `&center=${lat},${lng}` +
+//     "&zoom=18" +
+//     `&size=${size}&scale=2` +
+//     `&markers=color:red|${lat},${lng}`
+//   );
+// });
 
 async function findCityCenter(): Promise<{ lat: number; lng: number } | null> {
   if (!address.value) return null;
@@ -90,20 +90,23 @@ const postalCode = computed(() => {
   return postalCode;
 });
 
+const showDVFResults = ref(false);
+
 function dataFromEstimationForm(data: {
   surface: number;
   pieces: number;
-  travaux: number;
+  expectedRenovationDiscount: number;
   typeLocal: string;
   DPE: string;
-  equipements: string[];
+  equipments: string[];
 }) {
   surface.value = data.surface;
   pieces.value = data.pieces;
   typeLocal.value = data.typeLocal;
-  travaux.value = data.travaux;
+  expectedRenovationDiscount.value = data.expectedRenovationDiscount;
   DPE.value = data.DPE;
-  equipments.value = data.equipements;
+  equipments.value = [...data.equipments];
+  showDVFResults.value = true;
 }
 
 watch(address, async () => {
@@ -131,30 +134,36 @@ watch(address, async () => {
           />
         </p>
 
-        <img
+        <!-- <img
           class="map"
           v-if="address && mapSrc"
           :src="mapSrc"
           alt="Carte de l'adresse sélectionnée"
-        />
+        /> -->
         <LocationForm
           v-else
           @refresh="address = store.readFromLocalStorage()"
         />
       </div>
 
-      <EstimationForm @submit="dataFromEstimationForm" />
-
-      <DVFResults
-        :postalCode
-        :typeLocal
-        :surface
-        :pieces
-        :travaux
-        :DPE
-        :equipments
-        :isDownTown="isAdressInDowntown"
-      />
+      <Transition
+        ><EstimationForm
+          v-if="!showDVFResults"
+          @submit="dataFromEstimationForm"
+      /></Transition>
+      <Transition
+        ><DVFResults
+          v-if="showDVFResults"
+          :postalCode="postalCode"
+          :typeLocal="typeLocal"
+          :surface="surface"
+          :pieces="pieces"
+          :expectedRenovationDiscount="expectedRenovationDiscount"
+          :DPE="DPE"
+          :equipments="equipments"
+          :isDownTown="isAdressInDowntown"
+          @redoEstimate="showDVFResults = false"
+      /></Transition>
     </div>
   </Container>
 </template>
@@ -168,7 +177,6 @@ watch(address, async () => {
 
   @media (min-width: $big-tablet-screen) {
     flex-direction: row;
-    justify-content: space-between;
     padding: 4rem 0;
     gap: 4rem;
   }
@@ -178,9 +186,13 @@ watch(address, async () => {
     flex-direction: column;
     align-items: center;
     gap: 1rem;
+    width: 100%;
+    max-width: 550px;
+    position: relative;
 
     @media (min-width: $big-tablet-screen) {
       gap: 2rem;
+      height: 100%;
     }
 
     &__address {
@@ -191,9 +203,14 @@ watch(address, async () => {
       align-items: center;
       gap: 0.5rem;
       cursor: pointer;
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background-color: $accent-color-faded;
+      padding: 1rem;
+      border-radius: $radius;
 
       @media (min-width: $big-tablet-screen) {
-        font-size: $subtitles;
         &:hover > .icon {
           display: block;
           justify-content: center;
@@ -206,9 +223,10 @@ watch(address, async () => {
     }
     .map {
       width: 100%;
-      height: auto;
-      max-width: 350px;
-      max-height: 350px;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      border-radius: $radius;
     }
   }
 }

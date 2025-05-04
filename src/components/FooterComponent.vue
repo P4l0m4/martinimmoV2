@@ -18,7 +18,7 @@
         <h5 class="links__title">Liens utiles</h5>
 
         <li class="links__li">
-          <NuxtLink to="/vente-bien-immobilier-en-ligne"
+          <NuxtLink to="/estimation-en-ligne-bien-immobilier"
             >Vendre mon bien</NuxtLink
           >
         </li>

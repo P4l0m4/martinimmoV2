@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { colors } from "@/utils/colors";
 interface Props {
   color?: string;
 }
 
 withDefaults(defineProps<Props>(), {
-  color: "#fffdfa",
+  color: colors["base-color"],
 });
 </script>
 <template>

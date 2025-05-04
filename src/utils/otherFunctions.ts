@@ -24,10 +24,10 @@ export function isMobile() {
 }
 
 export function formattedValue(value: number) {
-  new Intl.NumberFormat("fr-FR", {
+  return new Intl.NumberFormat("fr-FR", {
     style: "currency",
     currency: "EUR",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(Math.round(value));
+  }).format(Math.round(value)); // ← on retourne le résultat
 }

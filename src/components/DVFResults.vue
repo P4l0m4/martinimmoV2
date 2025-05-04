@@ -1,24 +1,27 @@
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
 import { formattedValue } from "@/utils/otherFunctions";
+import CircularLoader from "./UI/CircularLoader.vue";
 
 interface Props {
-  postalCode?: string;
+  postalCode: string;
   year?: string;
-  surface?: number;
-  pieces?: number;
+  surface: number;
+  pieces: number;
   limit?: number;
-  typeLocal?: string;
-  travaux?: number;
-  DPE?: string;
-  isDownTown?: boolean;
+  typeLocal: string;
+  expectedRenovationDiscount: number;
+  DPE: string;
+  isDownTown: boolean;
   equipments?: string[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
   year: "2024",
-  limit: 40,
+  limit: 60,
 });
+
+const emit = defineEmits(["redoEstimate"]);
 
 interface DvfRecord {
   id: string;
@@ -34,17 +37,17 @@ const loading = ref(false);
 const error = ref<string | null>(null);
 const records = ref<DvfRecord[]>([]);
 
-function buildUrl(year?: string) {
+function buildUrl(year?: string, limit = props.limit) {
   const base =
     "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/" +
     "buildingref-france-demande-de-valeurs-foncieres-geolocalisee-millesime/records";
 
   const p = new URLSearchParams();
-  p.set("limit", String(props.limit));
+  p.set("limit", String(limit));
 
   if (props.postalCode) p.append("refine", `code_postal:"${props.postalCode}"`);
-  if (year) p.append("refine", `date_mutation:"${year}"`); // ← ici
-  if (props.surface) p.append("refine", `surface_reelle_bati:${props.surface}`);
+  if (year) p.append("refine", `date_mutation:"${year}"`);
+  // if (props.surface) p.append("refine", `surface_reelle_bati:${props.surface}`);
   if (props.typeLocal) p.append("refine", `type_local:"${props.typeLocal}"`);
   if (props.pieces)
     p.append("refine", `nombre_pieces_principales:${props.pieces}`);
@@ -52,24 +55,29 @@ function buildUrl(year?: string) {
   return `${base}?${p.toString()}`;
 }
 
-const apiUrl = computed(() => buildUrl(props.year));
+// const apiUrl = computed(() => buildUrl(props.year));
 
+const FIRST_YEAR = 2014;
 async function fetchData() {
   loading.value = true;
   error.value = null;
   records.value = [];
+
   try {
-    const r1 = await fetch(apiUrl.value);
-    if (!r1.ok) throw new Error(r1.statusText);
-    const d1 = await r1.json();
-    records.value = d1.results as DvfRecord[];
-    if (records.value.length <= 20 && props.year) {
-      const prevYear = String(Number(props.year) - 1);
-      const r2 = await fetch(buildUrl(prevYear));
-      if (r2.ok) {
-        const d2 = await r2.json();
-        records.value = records.value.concat(d2.results as DvfRecord[]);
+    let year = Number(props.year);
+    if (Number.isNaN(year)) year = new Date().getFullYear();
+
+    while (records.value.length < props.limit && year >= FIRST_YEAR) {
+      const remaining = props.limit - records.value.length;
+      const res = await fetch(buildUrl(String(year), remaining));
+      if (!res.ok) throw new Error(res.statusText);
+
+      const data = await res.json();
+      if (Array.isArray(data.results)) {
+        records.value.push(...(data.results as DvfRecord[]));
       }
+
+      year--;
     }
   } catch (e: any) {
     error.value = e.message ?? "Erreur inconnue";
@@ -86,20 +94,54 @@ watch(
     props.pieces,
     props.limit,
     props.typeLocal,
-    props.travaux,
-    props.DPE,
   ],
-  fetchData,
+  () => {
+    fetchData();
+  },
   { immediate: true }
 );
 
 const averageValue = computed(() => {
   if (records.value.length === 0) return null;
-  const total = records.value.reduce((acc, rec) => {
-    if (rec.valeur_fonciere) acc += rec.valeur_fonciere;
-    return acc;
+
+  const values = records.value
+    .map((r) => Number(String(r.valeur_fonciere).replace(/\s+/g, "")))
+    .filter((v) => Number.isFinite(v) && v > 0);
+
+  if (values.length === 0) return null;
+  return values.reduce((sum, v) => sum + v, 0) / values.length;
+});
+
+const equipmentBonus: Record<
+  string,
+  { Appartement?: number; Maison?: number }
+> = {
+  terrasse: { Appartement: 4, Maison: 3 },
+  balcon: { Appartement: 3 },
+  jardin: { Maison: 6 },
+  cave: { Appartement: 1, Maison: 1 },
+  garage: { Appartement: 2, Maison: 4 },
+  parking: { Appartement: 2, Maison: 4 },
+  piscine: { Appartement: 5, Maison: 10 },
+  ascenseur: { Appartement: 4 },
+  interphone: { Appartement: 1 },
+  alarme: { Maison: 1 },
+  climatisation: { Appartement: 2, Maison: 2 },
+  exposition: { Appartement: 2, Maison: 2 },
+  tennis: { Appartement: 3, Maison: 6 },
+};
+
+const equipmentsFactor = computed(() => {
+  if (!props.equipments?.length) return 1; // rien de coché → neutre
+
+  // Somme des bonus applicables
+  const totalPct = props.equipments.reduce((sum, key) => {
+    const bonus =
+      equipmentBonus[key]?.[props.typeLocal as "Appartement" | "Maison"];
+    return bonus ? sum + bonus : sum;
   }, 0);
-  return total / records.value.length;
+
+  return 1 + totalPct / 100; // facteur multiplicatif
 });
 
 const dpePct = computed(() => {
@@ -123,30 +165,79 @@ const dpePct = computed(() => {
   }
 });
 
+const avgPricePerSqm = computed(() => {
+  if (records.value.length === 0) return null;
+
+  const pricePerSqmList = records.value
+    .map((r) => {
+      const price = Number(String(r.valeur_fonciere).replace(/\s+/g, ""));
+      const sqm = Number(r.surface_reelle_bati);
+      return sqm > 0 && Number.isFinite(price) ? price / sqm : null;
+    })
+    .filter((v): v is number => v !== null);
+
+  if (pricePerSqmList.length === 0) return null;
+
+  const total = pricePerSqmList.reduce((sum, v) => sum + v, 0);
+  return total / pricePerSqmList.length; // €/m²
+});
+
+const marketValue = computed(() => {
+  if (!avgPricePerSqm.value) return null;
+  return avgPricePerSqm.value * props.surface; // € avant ajustements
+});
+
+const renovationFactor = computed(
+  () => 1 - props.expectedRenovationDiscount / 100
+);
+const dpeFactor = computed(() => 1 + dpePct.value / 100);
+const downtownFactor = computed(() => (props.isDownTown ? 1.2 : 1));
+const marginFactor = computed(() => 1 - 15 / 100);
+
 const estimatedValue = computed(() => {
-  if (!averageValue.value) return null;
+  if (!marketValue.value) return null;
 
-  const marginPct = 15; // %
-  const afterRenovation = averageValue.value - (props.travaux ?? 0);
-  const afterDpe = afterRenovation * (1 + dpePct.value / 100); // +/- DPE
-  const afterDownTown = afterDpe * (props.isDownTown ? 1.2 : 1); // +20 % si centre ville
-  const afterMargin = afterDownTown * (1 - marginPct / 100);
-
-  return Math.round(afterMargin);
+  return Math.round(
+    marketValue.value *
+      renovationFactor.value *
+      dpeFactor.value *
+      downtownFactor.value *
+      equipmentsFactor.value *
+      marginFactor.value
+  );
 });
 </script>
 <template>
   <section class="dvf-results">
-    {{ props }}
-    <span v-if="averageValue"
-      >Valeur fonctière moyenne {{ formattedValue(averageValue) }}</span
-    >
-    <span v-if="estimatedValue">
-      Estimation finale
+    <span class="dvf-results__estimation" v-if="estimatedValue && !loading">
       {{ formattedValue(estimatedValue) }}
     </span>
-    <div v-if="loading" class="loading">Chargement…</div>
+    <CircularLoader v-if="loading" />
     <div v-else-if="error" class="error">Erreur : {{ error }}</div>
+    <PrimaryButton variant="accent-color">Programmer une visite</PrimaryButton>
+    <button class="dvf-results__button" @click="$emit('redoEstimate')">
+      Refaire une estimation
+    </button>
+
+    <DropDown label="Détails">
+      <div class="dvf-results__details">
+        <span v-if="averageValue">
+          Valeur fonctière moyenne {{ formattedValue(averageValue) }}</span
+        >
+        <span>
+          Estimation basée sur {{ records.length }} transactions
+          précédentes.</span
+        >
+
+        <span v-if="avgPricePerSqm">
+          Prix d'achat max au mètre carré :
+          {{ formattedValue(avgPricePerSqm) }} ({{
+            formattedValue(avgPricePerSqm * surface)
+          }})</span
+        >
+        <pre>{{ props }}</pre>
+      </div>
+    </DropDown>
   </section>
 </template>
 
@@ -155,9 +246,47 @@ const estimatedValue = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  background-color: $accent-color-faded;
+  padding: 1rem;
+  border-radius: $radius;
+  max-width: 350px;
+  width: 100%;
+
+  @media (min-width: $big-tablet-screen) {
+    padding: 1.5rem;
+  }
+
+  &__estimation {
+    display: flex;
+    background-color: $accent-color-faded;
+    padding: 1rem;
+    border-radius: $radius;
+    font-size: $titles;
+    justify-content: center;
+
+    @media (min-width: $big-tablet-screen) {
+      padding: 1.5rem;
+      font-weight: $semi-bold;
+    }
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  &__button {
+    text-decoration: underline;
+    font-size: $small-text;
+    color: $text-color-alt;
+  }
 }
-.loading,
+
 .error {
+  background-color: $error-color;
+  color: $text-color-alt;
   padding: 1rem;
   text-align: center;
 }

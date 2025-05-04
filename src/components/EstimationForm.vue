@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import { reactive, computed } from "vue";
 import { useVuelidate } from "@vuelidate/core";
-import { required, integer, minValue, maxValue } from "@vuelidate/validators";
+import {
+  required,
+  integer,
+  minValue,
+  maxValue,
+  numeric,
+} from "@vuelidate/validators";
 
 const emit = defineEmits<{
   submit: [
     {
       surface: number | undefined;
       pieces: number | undefined;
-      travaux: number | undefined;
+      expectedRenovationDiscount: number;
       typeLocal: string | undefined;
       DPE?: string | undefined;
       equipments: string[];
@@ -44,10 +50,12 @@ const checkboxOptions = [
   { key: "parking", label: "Parking", belongsTo: ["Appartement", "Maison"] },
 ];
 
+const isPerksOpen = ref(false);
+
 const form = reactive({
   surface: undefined as number | undefined,
   pieces: undefined as number | undefined,
-  travaux: undefined as number | undefined,
+  expectedRenovationDiscount: undefined as number | undefined,
   typeLocal: undefined as string | undefined,
   DPE: undefined as string | undefined,
   ...checkboxOptions.reduce(
@@ -64,7 +72,12 @@ const rules = {
     maxValue: maxValue(140),
   },
   pieces: { required, integer, minValue: minValue(1), maxValue: maxValue(12) },
-  travaux: { integer, minValue: minValue(0), maxValue: maxValue(100_000) },
+  expectedRenovationDiscount: {
+    numeric,
+    minValue: minValue(0),
+    maxValue: maxValue(20),
+  },
+
   typeLocal: { required },
   DPE: { required },
 };
@@ -95,16 +108,15 @@ const piecesErrors = computed(() => {
   return e;
 });
 
-const travauxErrors = computed(() => {
+const expectedRenovationDiscountErrors = computed(() => {
   const e: string[] = [];
-  if (!v$.value.travaux.$dirty) return e;
-  if (v$.value.travaux.integer.$invalid)
+  if (!v$.value.expectedRenovationDiscount.$dirty) return e;
+  if (v$.value.expectedRenovationDiscount.numeric.$invalid)
     e.push("Le montant doit être numérique");
-  if (v$.value.travaux.minValue.$invalid) e.push("Montant négatif interdit");
-  if (v$.value.travaux.maxValue.$invalid)
-    e.push(
-      "Nous ne prenons pas en charge les biens à rénover à plus de 100 000 €"
-    );
+  if (v$.value.expectedRenovationDiscount.minValue.$invalid)
+    e.push("Montant négatif interdit");
+  if (v$.value.expectedRenovationDiscount.maxValue.$invalid)
+    e.push("Max travaux : 3");
   return e;
 });
 
@@ -129,23 +141,22 @@ const visibleCheckboxes = computed(() =>
   )
 );
 
+const selectedEquipments = computed(() => {
+  return visibleCheckboxes.value
+    .filter((opt) => form[opt.key])
+    .map((opt) => opt.key);
+});
+
 async function handleSubmit() {
   if (!(await v$.value.$validate())) return;
-
-  /* récupère UNIQUEMENT les équipements qui
-     – appartiennent au type choisi (visibleCheckboxes)
-     – sont cochés dans form */
-  const equipments = visibleCheckboxes.value
-    .filter((opt) => form[opt.key]) // case cochée
-    .map((opt) => opt.key); // ['terrasse', 'jardin', …]
 
   emit("submit", {
     surface: form.surface ? Number(form.surface) : undefined,
     pieces: form.pieces ? Number(form.pieces) : undefined,
-    travaux: form.travaux ? Number(form.travaux) : undefined,
+    expectedRenovationDiscount: form.expectedRenovationDiscount,
     typeLocal: form.typeLocal,
     DPE: form.DPE,
-    equipments,
+    equipments: selectedEquipments.value,
   });
 }
 </script>
@@ -172,15 +183,7 @@ async function handleSubmit() {
       :error="piecesErrors[0]"
     />
 
-    <InputField
-      id="travaux"
-      name="travaux"
-      label="Montant des travaux"
-      placeholder="Montant des travaux à réaliser (€)"
-      type="number"
-      v-model="form.travaux"
-      :error="travauxErrors[0]"
-    />
+    <RenovationDifficulty v-model="form.expectedRenovationDiscount" />
 
     <SelectField
       id="DPE"
@@ -203,17 +206,17 @@ async function handleSubmit() {
         { label: 'Maison', icon: 'house-line' },
       ]"
     />
-
-    <div class="estimation-form__checkboxes">
-      <CheckboxField
-        v-for="opt in visibleCheckboxes"
-        :key="opt.key"
-        :id="opt.key"
-        :name="opt.key"
-        :label="opt.label"
-        v-model="form[opt.key]"
-      />
-    </div>
+    <DropDown label="Avantages" :number="selectedEquipments.length">
+      <div class="estimation-form__checkboxes">
+        <CheckboxField
+          v-for="opt in visibleCheckboxes"
+          :key="opt.key"
+          :id="opt.key"
+          :name="opt.key"
+          :label="opt.label"
+          v-model="form[opt.key]"
+        /></div
+    ></DropDown>
 
     <PrimaryButton variant="accent-color" @click="handleSubmit">
       Lancer l'estimation
@@ -224,14 +227,16 @@ async function handleSubmit() {
       v-if="
         surfaceErrors[0] ||
         piecesErrors[0] ||
-        travauxErrors[0] ||
+        expectedRenovationDiscountErrors[0] ||
         typeLocalErrors[0] ||
         DPEErrors[0]
       "
     >
       <span v-for="e in surfaceErrors" :key="e">{{ e }}</span>
       <span v-for="e in piecesErrors" :key="e">{{ e }}</span>
-      <span v-for="e in travauxErrors" :key="e">{{ e }}</span>
+      <span v-for="e in expectedRenovationDiscountErrors" :key="e">{{
+        e
+      }}</span>
       <span v-for="e in typeLocalErrors" :key="e">{{ e }}</span>
       <span v-for="e in DPEErrors" :key="e">{{ e }}</span>
     </div>
@@ -262,7 +267,7 @@ async function handleSubmit() {
 }
 
 .errors {
-  color: red;
+  color: $error-color;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
