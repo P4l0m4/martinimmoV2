@@ -83,9 +83,12 @@ onMounted(async () => {
   max-height: 68.4px;
   width: 100%;
   align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
 
   @media (min-width: $big-tablet-screen) {
     width: 500px;
+    flex-direction: row;
   }
 
   &__input-field {
@@ -96,10 +99,12 @@ onMounted(async () => {
 
     @media (min-width: $big-tablet-screen) {
       width: 300px;
+      max-width: 300px;
     }
 
     @media (min-width: $desktop-screen) {
       width: 350px;
+      max-width: 350px;
     }
 
     &::after {
