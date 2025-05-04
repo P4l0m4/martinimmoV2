@@ -15,6 +15,10 @@ defineProps({
     required: true,
   },
   error: String,
+  icon: {
+    type: String,
+    required: false,
+  },
 });
 
 onClickOutside(target, () => {
@@ -57,14 +61,15 @@ function selectOption(option: string) {
       :class="{ shake: error }"
     >
       <IconComponent
-        icon="rows"
-        size="1.5rem"
-        :color="colors['secondary-color']" />
+        v-if="icon"
+        :icon
+        size="1.25rem"
+        :color="colors['text-color-faded']" />
 
       {{ optionSelected.length > 0 ? optionSelected : defaultLabel }}
       <span style="opacity: 0.6; margin-left: auto">
         <IconComponent
-          :icon="isDropdownOpen ? 'caret-up-bold' : 'caret-down-bold'"
+          :icon="isDropdownOpen ? 'caret_up_bold' : 'caret_down_bold'"
           size="1.25rem"
           :color="colors['text-color']" /></span
     ></span>

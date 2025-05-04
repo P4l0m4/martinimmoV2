@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
+import { colors } from "@/utils/colors";
 
 const discount = defineModel<number>({ default: 0 });
 
@@ -32,10 +33,17 @@ watch(
 
 <template>
   <div class="renovation-difficulty">
-    <label for="renovation-difficulty__label">Travaux</label>
+    <label
+      for="renovation-difficulty-range"
+      class="renovation-difficulty__label"
+      ><IconComponent
+        icon="hammer_fill"
+        :color="colors['primary-color']"
+      />Travaux</label
+    >
 
     <input
-      id="renovation-difficulty__range"
+      id="renovation-difficulty-range"
       type="range"
       min="0"
       max="3"
@@ -53,12 +61,81 @@ watch(
   flex-direction: column;
   gap: 0.75rem;
 
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
   &__legend {
     font-size: $small-text;
   }
 }
 
 input[type="range"] {
+  -webkit-appearance: none;
   width: 100%;
+  height: 12px;
+  border-radius: $radius;
+  border: none !important;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Chrome / Edge / Safari */
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 12px;
+  border-radius: $radius;
+  background: linear-gradient(90deg, $base-color 0%, $accent-color 100%);
+}
+
+/* Firefox  */
+input[type="range"]::-moz-range-track {
+  height: 12px;
+  border-radius: $radius;
+  background: linear-gradient(90deg, $base-color 0%, $accent-color 100%);
+}
+
+/* IE / Edge Legacy */
+input[type="range"]::-ms-track {
+  height: 12px;
+  border-radius: $radius;
+  background: linear-gradient(90deg, $base-color 0%, $accent-color 100%);
+  border: none;
+  color: transparent; /* sinon la piste est rayée sur IE */
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: $base-color;
+  border: 2px solid $accent-color;
+  margin-top: -6px;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: $base-color;
+  border: 2px solid $accent-color;
+}
+input[type="range"]::-ms-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: $base-color;
+  border: 2px solid $accent-color;
+}
+
+input[type="range"]:focus {
+  outline: none;
+}
+input[type="range"]:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px rgba($secondary-color, 0.25);
+}
+input[type="range"]:focus::-moz-range-thumb {
+  box-shadow: 0 0 0 4px rgba($secondary-color, 0.25);
 }
 </style>

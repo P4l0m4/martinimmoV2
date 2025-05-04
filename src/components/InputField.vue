@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { colors } from "@/utils/colors";
 
 interface Props {
   id: string;
@@ -38,8 +39,8 @@ function toggleShowPassword() {
     <IconComponent
       v-if="icon"
       :icon="icon"
-      class="input-field__icon"
-      color="#232323"
+      :color="colors['text-color-faded']"
+      size="1.25rem"
     />
 
     <input
@@ -67,7 +68,7 @@ function toggleShowPassword() {
       @click="toggleShowPassword"
     />
     <IconComponent
-      icon="eye-off"
+      icon="eye_off"
       class="input-field__icon"
       style="cursor: pointer"
       v-if="type === 'password' && !showPassword"
@@ -96,10 +97,6 @@ function toggleShowPassword() {
     white-space: nowrap;
     width: fit-content;
     margin-left: 0.75rem;
-  }
-
-  &__icon {
-    opacity: 0.6;
   }
 
   input {

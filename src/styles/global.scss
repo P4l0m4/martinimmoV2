@@ -53,6 +53,7 @@ textarea {
   caret-color: $text-color;
   background-color: transparent;
   color: $text-color;
+
   &:focus {
     border: 2px solid $text-color;
     outline: $text-color;
@@ -67,7 +68,7 @@ input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px $primary-color inset !important;
+  -webkit-box-shadow: 0 0 0 20px $primary-color inset !important;
   -webkit-text-fill-color: $text-color !important;
 }
 input[type="search"] {
@@ -82,7 +83,7 @@ input[type="search"] {
   &:-webkit-autofill:hover,
   &:-webkit-autofill:focus,
   &:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px $primary-color inset !important;
+    -webkit-box-shadow: 0 0 0 20px $primary-color inset !important;
     border: 2px solid $primary-color !important;
     outline: $primary-color !important;
   }

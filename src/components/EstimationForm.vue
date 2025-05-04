@@ -13,6 +13,7 @@ const emit = defineEmits<{
   submit: [
     {
       surface: number | undefined;
+      surfaceHabitable: number | undefined;
       pieces: number | undefined;
       expectedRenovationDiscount: number;
       typeLocal: string | undefined;
@@ -50,10 +51,9 @@ const checkboxOptions = [
   { key: "parking", label: "Parking", belongsTo: ["Appartement", "Maison"] },
 ];
 
-const isPerksOpen = ref(false);
-
 const form = reactive({
   surface: undefined as number | undefined,
+  surfaceHabitable: undefined as number | undefined,
   pieces: undefined as number | undefined,
   expectedRenovationDiscount: undefined as number | undefined,
   typeLocal: undefined as string | undefined,
@@ -66,6 +66,12 @@ const form = reactive({
 
 const rules = {
   surface: {
+    required,
+    integer,
+    minValue: minValue(10),
+    maxValue: maxValue(140),
+  },
+  surfaceHabitable: {
     required,
     integer,
     minValue: minValue(10),
@@ -87,6 +93,17 @@ const isValid = computed(() => !v$.value.$error);
 
 /* ------------------ tableaux d’erreurs custom --------------------- */
 const surfaceErrors = computed(() => {
+  const e: string[] = [];
+  if (!v$.value.surface.$dirty) return e;
+  if (v$.value.surface.required.$invalid) e.push("Ajoutez la surface du bien");
+  if (v$.value.surface.integer.$invalid)
+    e.push("La surface doit être un nombre entier");
+  if (v$.value.surface.minValue.$invalid) e.push("Surface minimale : 10 m²");
+  if (v$.value.surface.maxValue.$invalid) e.push("Surface maximale : 140 m²");
+  return e;
+});
+
+const surfaceHabitableErrors = computed(() => {
   const e: string[] = [];
   if (!v$.value.surface.$dirty) return e;
   if (v$.value.surface.required.$invalid) e.push("Ajoutez la surface du bien");
@@ -152,6 +169,9 @@ async function handleSubmit() {
 
   emit("submit", {
     surface: form.surface ? Number(form.surface) : undefined,
+    surfaceHabitable: form.surfaceHabitable
+      ? Number(form.surfaceHabitable)
+      : undefined,
     pieces: form.pieces ? Number(form.pieces) : undefined,
     expectedRenovationDiscount: form.expectedRenovationDiscount,
     typeLocal: form.typeLocal,
@@ -167,10 +187,21 @@ async function handleSubmit() {
       id="surface"
       name="surface"
       label="Surface"
-      placeholder="Surface en m²"
+      placeholder="Surface bâtie réelle en m²"
       type="number"
       v-model="form.surface"
       :error="surfaceErrors[0]"
+      icon="square_half_bold"
+    />
+    <InputField
+      id="surfaceHabitable"
+      name="surfaceHabitable"
+      label="Surface habitable"
+      placeholder="Surface habitable en m² (loi Carrez)"
+      type="number"
+      v-model="form.surfaceHabitable"
+      :error="surfaceHabitableErrors[0]"
+      icon="square_logo_fill"
     />
 
     <InputField
@@ -183,8 +214,6 @@ async function handleSubmit() {
       :error="piecesErrors[0]"
     />
 
-    <RenovationDifficulty v-model="form.expectedRenovationDiscount" />
-
     <SelectField
       id="DPE"
       name="DPE"
@@ -192,9 +221,11 @@ async function handleSubmit() {
       v-model="form.DPE"
       :error="DPEErrors[0]"
       :options="['A', 'B', 'C', 'D', 'E', 'F', 'G']"
-      defaultLabel="Sélectionnez le DPE"
+      defaultLabel="DPE"
+      icon="thermometer_simple_bold"
     />
 
+    <RenovationDifficulty v-model="form.expectedRenovationDiscount" />
     <SwitchInput
       id="typeLocal"
       name="typeLocal"
@@ -202,11 +233,15 @@ async function handleSubmit() {
       v-model="form.typeLocal"
       :error="typeLocalErrors[0]"
       :options="[
-        { label: 'Appartement', icon: 'building-apartment' },
-        { label: 'Maison', icon: 'house-line' },
+        { label: 'Appartement', icon: 'building_apartment' },
+        { label: 'Maison', icon: 'house_line' },
       ]"
     />
-    <DropDown label="Avantages" :number="selectedEquipments.length">
+    <DropDown
+      label="Avantages"
+      :number="selectedEquipments.length"
+      icon="trophy_fill"
+    >
       <div class="estimation-form__checkboxes">
         <CheckboxField
           v-for="opt in visibleCheckboxes"

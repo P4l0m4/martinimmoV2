@@ -7,7 +7,7 @@ interface Option {
 }
 
 const props = defineProps<{
-  options: Option[]; // tableau [{ label, icon }]
+  options: Option[];
 }>();
 
 const model = defineModel<string>({
@@ -63,6 +63,7 @@ onMounted(() => {
   height: 44px;
   align-items: center;
   justify-content: center;
+  border: 2px solid $base-color;
 
   &__btn {
     flex: 1 1 0;
@@ -91,7 +92,7 @@ onMounted(() => {
     background: $secondary-color;
     transition: transform 0.3s;
     border-radius: inherit;
-    height: 44px;
+    height: 42px;
   }
 }
 </style>

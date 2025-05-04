@@ -16,19 +16,19 @@ const DPE = ref();
 const isAdressInDowntown = ref(false);
 const equipments = ref<string[]>([]);
 
-// const mapSrc = computed(() => {
-//   if (!address.value?.latLng) return null;
-//   const { lat, lng } = address.value.latLng;
-//   const size = isMobile() ? "400x400" : "700x700";
-//   return (
-//     "https://maps.googleapis.com/maps/api/staticmap" +
-//     `?key=${cfg.public.MAPS_PLACES_API_KEY}` +
-//     `&center=${lat},${lng}` +
-//     "&zoom=18" +
-//     `&size=${size}&scale=2` +
-//     `&markers=color:red|${lat},${lng}`
-//   );
-// });
+const mapSrc = computed(() => {
+  if (!address.value?.latLng) return null;
+  const { lat, lng } = address.value.latLng;
+  const size = isMobile() ? "400x400" : "700x700";
+  return (
+    "https://maps.googleapis.com/maps/api/staticmap" +
+    `?key=${cfg.public.MAPS_PLACES_API_KEY}` +
+    `&center=${lat},${lng}` +
+    "&zoom=18" +
+    `&size=${size}&scale=2` +
+    `&markers=color:red|${lat},${lng}`
+  );
+});
 
 async function findCityCenter(): Promise<{ lat: number; lng: number } | null> {
   if (!address.value) return null;
@@ -134,15 +134,17 @@ watch(address, async () => {
           />
         </p>
 
-        <!-- <img
+        <img
           class="map"
           v-if="address && mapSrc"
           :src="mapSrc"
           alt="Carte de l'adresse sélectionnée"
-        /> -->
+        />
         <LocationForm
           v-else
-          @refresh="address = store.readFromLocalStorage()"
+          @refresh="
+            (address = store.readFromLocalStorage()), (showDVFResults = false)
+          "
         />
       </div>
 
@@ -177,6 +179,7 @@ watch(address, async () => {
 
   @media (min-width: $big-tablet-screen) {
     flex-direction: row;
+    justify-content: center;
     padding: 4rem 0;
     gap: 4rem;
   }
@@ -206,9 +209,10 @@ watch(address, async () => {
       position: absolute;
       top: 1rem;
       left: 1rem;
-      background-color: $accent-color-faded;
+      background-color: $secondary-color-faded;
       padding: 1rem;
       border-radius: $radius;
+      max-width: 100%;
 
       @media (min-width: $big-tablet-screen) {
         &:hover > .icon {
