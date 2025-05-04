@@ -118,12 +118,17 @@ const isDesktopScreen = computed(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  gap: 2rem;
   position: absolute;
   height: 100%;
   z-index: 2;
-  padding: 4rem 1rem;
+  padding: 2rem 1rem;
+
+  @media (min-width: $big-tablet-screen) {
+    padding: 4rem 1rem;
+    justify-content: space-between;
+    gap: 1rem;
+  }
 
   &__logo {
     display: flex;

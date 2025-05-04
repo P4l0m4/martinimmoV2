@@ -65,8 +65,16 @@ onMounted(async () => {
 <template>
   <form class="location-form">
     <span>{{ address }}</span>
-    <div ref="root" class="location-form__input-field"></div>
-    <NuxtLink to="/estimation-en-ligne-bien-immobilier" @click="emit('refresh')"
+    <div
+      ref="root"
+      class="location-form__input-field"
+      data-placeholder="Adresse du bien"
+      :class="{ filled: !!address }"
+    ></div>
+    <NuxtLink
+      to="/estimation-en-ligne-bien-immobilier"
+      @click="emit('refresh')"
+      class="button"
       ><PrimaryButton variant="accent-color"
         >Obtenir une offre</PrimaryButton
       ></NuxtLink
@@ -80,15 +88,17 @@ onMounted(async () => {
   background-color: $primary-color;
   border-radius: $radius;
   padding: 0.25rem;
-  max-height: 68.4px;
   width: 100%;
   align-items: center;
   flex-direction: column;
   justify-content: space-between;
+  gap: 0.5rem;
 
   @media (min-width: $big-tablet-screen) {
+    max-height: 68.4px;
     width: 500px;
     flex-direction: row;
+    gap: 0;
   }
 
   &__input-field {
@@ -107,6 +117,21 @@ onMounted(async () => {
       max-width: 350px;
     }
 
+    &::before {
+      content: attr(data-placeholder);
+      position: absolute;
+      inset: 0 16px 0 16px;
+      line-height: 38px;
+      width: fit-content;
+      white-space: nowrap;
+      color: $text-color-faded;
+      pointer-events: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      z-index: 1;
+    }
+
     &::after {
       content: "";
       position: absolute;
@@ -118,10 +143,19 @@ onMounted(async () => {
       pointer-events: none;
       border: $primary-color solid 6px;
     }
+
+    &.filled::before {
+      opacity: 0;
+    }
   }
 
-  button {
-    width: fit-content;
+  .button {
+    width: 100%;
+    max-width: 100%;
+
+    @media (min-width: $big-tablet-screen) {
+      width: fit-content;
+    }
   }
 }
 </style>
