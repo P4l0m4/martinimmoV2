@@ -102,7 +102,7 @@ onMounted(async () => {
   }
 
   &__input-field {
-    width: 164px;
+    width: 100%;
     max-width: 100%;
     padding: 0 0.75rem;
     position: relative;
