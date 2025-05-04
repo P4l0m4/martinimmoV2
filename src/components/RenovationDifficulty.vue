@@ -75,7 +75,7 @@ watch(
 input[type="range"] {
   -webkit-appearance: none;
   width: 100%;
-  height: 12px;
+  height: 17px;
   border-radius: $radius;
   border: none !important;
   background: transparent;
@@ -84,21 +84,21 @@ input[type="range"] {
 
 /* Chrome / Edge / Safari */
 input[type="range"]::-webkit-slider-runnable-track {
-  height: 12px;
+  height: 16px;
   border-radius: $radius;
   background: linear-gradient(90deg, $base-color 0%, $accent-color 100%);
 }
 
 /* Firefox  */
 input[type="range"]::-moz-range-track {
-  height: 12px;
+  height: 16px;
   border-radius: $radius;
   background: linear-gradient(90deg, $base-color 0%, $accent-color 100%);
 }
 
 /* IE / Edge Legacy */
 input[type="range"]::-ms-track {
-  height: 12px;
+  height: 16px;
   border-radius: $radius;
   background: linear-gradient(90deg, $base-color 0%, $accent-color 100%);
   border: none;
@@ -108,22 +108,22 @@ input[type="range"]::-ms-track {
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 24px;
-  height: 24px;
-  border-radius: 50%;
+  height: 32px;
+  border-radius: $radius;
   background: $base-color;
   border: 2px solid $accent-color;
-  margin-top: -6px;
+  margin-top: -8px;
 }
 input[type="range"]::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 32px;
   border-radius: 50%;
   background: $base-color;
   border: 2px solid $accent-color;
 }
 input[type="range"]::-ms-thumb {
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 32px;
   border-radius: 50%;
   background: $base-color;
   border: 2px solid $accent-color;

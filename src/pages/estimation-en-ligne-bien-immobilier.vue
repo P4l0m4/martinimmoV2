@@ -209,6 +209,8 @@ watch(address, async () => {
       position: absolute;
       top: 1rem;
       left: 1rem;
+      right: 1rem;
+      width: fit-content;
       background-color: $secondary-color-faded;
       padding: 1rem;
       border-radius: $radius;
