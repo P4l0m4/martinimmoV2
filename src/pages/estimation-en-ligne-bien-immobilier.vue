@@ -150,7 +150,7 @@ watch(address, async () => {
 
       <Transition
         ><EstimationForm
-          v-if="!showDVFResults"
+          v-if="!showDVFResults && address"
           @submit="dataFromEstimationForm"
       /></Transition>
       <Transition
