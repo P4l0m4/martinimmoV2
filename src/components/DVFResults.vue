@@ -19,6 +19,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   year: "2024",
   limit: 60,
+  expectedRenovationDiscount: 0,
 });
 
 const emit = defineEmits(["redoEstimate"]);
