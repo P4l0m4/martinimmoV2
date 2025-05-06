@@ -69,13 +69,13 @@ const rules = {
     required,
     integer,
     minValue: minValue(10),
-    maxValue: maxValue(140),
+    maxValue: maxValue(600),
   },
   surfaceHabitable: {
     required,
     integer,
     minValue: minValue(10),
-    maxValue: maxValue(140),
+    maxValue: maxValue(600),
   },
   pieces: { required, integer, minValue: minValue(1), maxValue: maxValue(12) },
   expectedRenovationDiscount: {
@@ -99,7 +99,7 @@ const surfaceErrors = computed(() => {
   if (v$.value.surface.integer.$invalid)
     e.push("La surface doit être un nombre entier");
   if (v$.value.surface.minValue.$invalid) e.push("Surface minimale : 10 m²");
-  if (v$.value.surface.maxValue.$invalid) e.push("Surface maximale : 140 m²");
+  if (v$.value.surface.maxValue.$invalid) e.push("Surface maximale : 600 m²");
   return e;
 });
 
@@ -110,7 +110,7 @@ const surfaceHabitableErrors = computed(() => {
   if (v$.value.surface.integer.$invalid)
     e.push("La surface doit être un nombre entier");
   if (v$.value.surface.minValue.$invalid) e.push("Surface minimale : 10 m²");
-  if (v$.value.surface.maxValue.$invalid) e.push("Surface maximale : 140 m²");
+  if (v$.value.surface.maxValue.$invalid) e.push("Surface maximale : 600 m²");
   return e;
 });
 

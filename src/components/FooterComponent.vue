@@ -10,9 +10,7 @@
           />
           <h4 class="title-section__title">Martinimmo</h4>
         </div>
-        <p class="paragraphs">
-          Vendez votre bien immobilier immédatement et sans frais d'agence.
-        </p>
+        <p class="paragraphs">Vendez votre bien immobilier en 48H.</p>
       </div>
       <ul class="links">
         <h5 class="links__title">Liens utiles</h5>
