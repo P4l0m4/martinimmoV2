@@ -219,56 +219,55 @@ const offeredValue = computed(() => {
 </script>
 <template>
   <section class="dvf-results">
-    <h1 class="titles">Félicitations !</h1>
-    <h2 class="subtitles">
-      Votre {{ typeLocal.toLowerCase() }} nous a tapé dans l’oeil 👀
-    </h2>
-    <div
-      class="dvf-results__offer"
-      v-if="discalifications?.length === 0 || undefined || null"
-    >
-      <div class="dvf-results__offer__wrapper">
-        <span class="dvf-results__offer__wrapper__title"
-          >Notre proposition</span
-        >
-        <span
-          class="dvf-results__offer__wrapper__amount"
-          v-if="offeredValue && !loading"
-        >
-          <IconComponent
-            icon="star_four_fill"
-            :color="colors['primary-color']"
-            size="2rem"
-          />{{ formattedValue(offeredValue) }}
-          <IconComponent
-            icon="star_four_fill"
-            :color="colors['primary-color']"
-            size="2rem"
-          />
-        </span>
-        <PrimaryButton variant="accent-color" icon="calendar_dots_fill"
-          >Programmer une visite</PrimaryButton
-        >
-        <button
-          class="dvf-results__offer__wrapper__button"
-          @click="$emit('redoEstimate')"
-        >
-          Refaire une estimation
-        </button>
-        <DropDown label="Détails">
-          <div class="dvf-results__offer__wrapper__details">
-            <span v-if="averageValue">
-              Valeur fonctière moyenne {{ formattedValue(averageValue) }}</span
-            >
-            <span>
-              Estimation basée sur {{ records.length }} transactions précédentes
-              dans ce secteur.</span
-            >
-          </div>
-        </DropDown>
-      </div>
-      <UIStepsVertical />
-    </div>
+    <template v-if="discalifications?.length === 0 || undefined || null">
+      <h1 class="titles">Félicitations !</h1>
+      <h2 class="subtitles">
+        Votre {{ typeLocal.toLowerCase() }} nous a tapé dans l’oeil 👀
+      </h2>
+      <div class="dvf-results__offer">
+        <div class="dvf-results__offer__wrapper">
+          <span class="dvf-results__offer__wrapper__title"
+            >Notre proposition</span
+          >
+          <span
+            class="dvf-results__offer__wrapper__amount"
+            v-if="offeredValue && !loading"
+          >
+            <IconComponent
+              icon="star_four_fill"
+              :color="colors['primary-color']"
+              size="2rem"
+            />{{ formattedValue(offeredValue) }}
+            <IconComponent
+              icon="star_four_fill"
+              :color="colors['primary-color']"
+              size="2rem"
+            />
+          </span>
+          <PrimaryButton variant="accent-color" icon="calendar_dots_fill"
+            >Programmer une visite</PrimaryButton
+          >
+          <button
+            class="dvf-results__offer__wrapper__button"
+            @click="$emit('redoEstimate')"
+          >
+            Refaire une estimation
+          </button>
+          <DropDown label="Détails">
+            <div class="dvf-results__offer__wrapper__details">
+              <span v-if="averageValue">
+                Valeur fonctière moyenne
+                {{ formattedValue(averageValue) }}</span
+              >
+              <span>
+                Estimation basée sur {{ records.length }} transactions
+                précédentes dans ce secteur.</span
+              >
+            </div>
+          </DropDown>
+        </div>
+        <UIStepsVertical /></div
+    ></template>
     <div class="dvf-results__estimate" v-else>
       <div class="dvf-results__estimate__wrapper">
         <span class="dvf-results__estimate__wrapper__title"

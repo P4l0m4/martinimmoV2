@@ -206,7 +206,9 @@ watch(address, async () => {
   @media (min-width: $big-tablet-screen) {
     flex-direction: row;
     justify-content: center;
+    align-items: center;
     gap: 4rem;
+    height: calc(100vh - 4rem);
   }
 
   &__map-container {
