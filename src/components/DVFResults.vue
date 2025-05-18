@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
 import { formattedValue } from "@/utils/otherFunctions";
-import CircularLoader from "./UI/CircularLoader.vue";
+import { colors } from "@/utils/colors";
 
 interface Props {
   postalCode: string;
   year?: string;
   surface: number;
+  surfaceHabitable: number;
   pieces: number;
   limit?: number;
   typeLocal: string;
@@ -14,6 +15,7 @@ interface Props {
   DPE: string;
   isDownTown: boolean;
   equipments?: string[];
+  discalifications?: string[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -92,9 +94,11 @@ watch(
     props.postalCode,
     props.year,
     props.surface,
+    props.surfaceHabitable,
     props.pieces,
     props.limit,
     props.typeLocal,
+    props.discalifications,
   ],
   () => {
     fetchData();
@@ -203,42 +207,126 @@ const estimatedValue = computed(() => {
       renovationFactor.value *
       dpeFactor.value *
       downtownFactor.value *
-      equipmentsFactor.value *
-      marginFactor.value
+      equipmentsFactor.value
   );
+});
+
+const offeredValue = computed(() => {
+  if (!estimatedValue.value) return null;
+
+  return Math.round(estimatedValue.value * marginFactor.value);
 });
 </script>
 <template>
   <section class="dvf-results">
-    <span class="dvf-results__estimation" v-if="estimatedValue && !loading">
-      {{ formattedValue(estimatedValue) }}
-    </span>
+    <h1 class="titles">Félicitations !</h1>
+    <h2 class="subtitles">
+      Votre {{ typeLocal.toLowerCase() }} nous a tapé dans l’oeil 👀
+    </h2>
+    <div
+      class="dvf-results__offer"
+      v-if="discalifications?.length === 0 || undefined || null"
+    >
+      <div class="dvf-results__offer__wrapper">
+        <span class="dvf-results__offer__wrapper__title"
+          >Notre proposition</span
+        >
+        <span
+          class="dvf-results__offer__wrapper__amount"
+          v-if="offeredValue && !loading"
+        >
+          <IconComponent
+            icon="star_four_fill"
+            :color="colors['primary-color']"
+            size="2rem"
+          />{{ formattedValue(offeredValue) }}
+          <IconComponent
+            icon="star_four_fill"
+            :color="colors['primary-color']"
+            size="2rem"
+          />
+        </span>
+        <PrimaryButton variant="accent-color" icon="calendar_dots_fill"
+          >Programmer une visite</PrimaryButton
+        >
+        <button
+          class="dvf-results__offer__wrapper__button"
+          @click="$emit('redoEstimate')"
+        >
+          Refaire une estimation
+        </button>
+        <DropDown label="Détails">
+          <div class="dvf-results__offer__wrapper__details">
+            <span v-if="averageValue">
+              Valeur fonctière moyenne {{ formattedValue(averageValue) }}</span
+            >
+            <span>
+              Estimation basée sur {{ records.length }} transactions précédentes
+              dans ce secteur.</span
+            >
+          </div>
+        </DropDown>
+      </div>
+      <UIStepsVertical />
+    </div>
+    <div class="dvf-results__estimate" v-else>
+      <div class="dvf-results__estimate__wrapper">
+        <span class="dvf-results__estimate__wrapper__title"
+          >Résultat de l'estimation</span
+        >
+        <span
+          class="dvf-results__estimate__wrapper__amount"
+          v-if="estimatedValue && !loading"
+        >
+          <IconComponent
+            icon="star_four_fill"
+            :color="colors['primary-color']"
+            size="2rem"
+          />{{ formattedValue(estimatedValue) }}
+          <IconComponent
+            icon="star_four_fill"
+            :color="colors['primary-color']"
+            size="2rem"
+          />
+        </span>
+        <button
+          class="dvf-results__estimate__wrapper__button"
+          @click="$emit('redoEstimate')"
+        >
+          Refaire une estimation
+        </button>
+        <DropDown label="Détails">
+          <div class="dvf-results__estimate__wrapper__details">
+            <span v-if="averageValue">
+              Valeur fonctière moyenne {{ formattedValue(averageValue) }}</span
+            >
+            <span>
+              Estimation basée sur {{ records.length }} transactions précédentes
+              dans ce secteur.</span
+            >
+            <pre>{{ props }}</pre>
+          </div>
+        </DropDown>
+      </div>
+      <div class="dvf-results__estimate__external-contact">
+        <span class="dvf-results__estimate__external-contact__title"
+          >Nous ne pouvons pas vous faire une offre pour ce bien</span
+        >
+        <p class="dvf-results__estimate__external-contact__subtitle">
+          Mais nous pouvons confier votre projet à l’un de nos agents
+          immobiliers partenaires
+        </p>
+        <PrimaryButton variant="accent-color" icon="phone_fill"
+          >Être recontacté par un agent immobilier</PrimaryButton
+        >
+        <button class="dvf-results__estimate__external-contact__button">
+          Politique d'achat
+        </button>
+      </div>
+    </div>
+
     <CircularLoader v-if="loading" />
     <div v-else-if="error" class="error">Erreur : {{ error }}</div>
-    <PrimaryButton variant="accent-color">Programmer une visite</PrimaryButton>
-    <button class="dvf-results__button" @click="$emit('redoEstimate')">
-      Refaire une estimation
-    </button>
-
-    <DropDown label="Détails">
-      <div class="dvf-results__details">
-        <span v-if="averageValue">
-          Valeur fonctière moyenne {{ formattedValue(averageValue) }}</span
-        >
-        <span>
-          Estimation basée sur {{ records.length }} transactions
-          précédentes.</span
-        >
-
-        <span v-if="avgPricePerSqm">
-          Prix d'achat max au mètre carré :
-          {{ formattedValue(avgPricePerSqm) }} ({{
-            formattedValue(avgPricePerSqm * surface)
-          }})</span
-        >
-        <pre>{{ props }}</pre>
-      </div>
-    </DropDown>
   </section>
 </template>
 
@@ -246,42 +334,177 @@ const estimatedValue = computed(() => {
 .dvf-results {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  background-color: $accent-color-faded;
-  padding: 1rem;
-  border-radius: $radius;
-  max-width: 350px;
+  align-items: center;
+  text-align: center;
+  gap: 2rem;
   width: 100%;
 
   @media (min-width: $big-tablet-screen) {
-    padding: 1.5rem;
+    width: fit-content;
   }
 
-  &__estimation {
+  &__estimate {
     display: flex;
-    background-color: $accent-color-faded;
-    padding: 1rem;
-    border-radius: $radius;
-    font-size: $titles;
-    justify-content: center;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
 
     @media (min-width: $big-tablet-screen) {
+      width: fit-content;
+      flex-direction: row;
+    }
+
+    @media (min-width: $big-tablet-screen) {
+      gap: 4rem;
+    }
+
+    &__wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+      justify-content: center;
+      align-items: center;
+
+      @media (min-width: $big-tablet-screen) {
+        max-width: 450px;
+      }
+
+      &__title {
+        font-size: $subtitles;
+        font-weight: $medium;
+      }
+
+      &__amount {
+        display: flex;
+        font-size: $titles;
+        justify-content: center;
+        align-items: center;
+        gap: 1.33rem;
+
+        @media (min-width: $big-tablet-screen) {
+          font-weight: $semi-bold;
+        }
+      }
+
+      &__button {
+        text-decoration: underline;
+        font-size: $small-text;
+        color: $text-color-alt;
+        margin-top: -1.5rem;
+      }
+
+      &__details {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        margin-top: -2rem;
+        text-align: left;
+      }
+    }
+
+    &__external-contact {
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
       padding: 1.5rem;
-      font-weight: $semi-bold;
+      background-color: $accent-color-faded;
+      border-radius: $radius;
+      align-items: center;
+      max-width: 550px;
+
+      &__title {
+        font-size: $subtitles;
+        font-weight: $medium;
+        text-align: center;
+      }
+
+      &__subtitle {
+        font-size: 1rem;
+        color: $text-color-alt;
+        text-align: center;
+      }
+
+      &__button {
+        text-decoration: underline;
+        font-size: $small-text;
+        color: $text-color-alt;
+        margin-top: -1.5rem;
+      }
+    }
+
+    &__button {
+      text-decoration: underline;
+      font-size: $small-text;
+      color: $text-color-alt;
     }
   }
 
-  &__details {
+  &__offer {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 2rem;
     width: 100%;
-  }
 
-  &__button {
-    text-decoration: underline;
-    font-size: $small-text;
-    color: $text-color-alt;
+    @media (min-width: $tablet-screen) {
+      width: fit-content;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    @media (min-width: $big-tablet-screen) {
+      gap: 4rem;
+    }
+
+    &__wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+      justify-content: center;
+      align-items: center;
+      height: fit-content;
+      padding: 1rem;
+      background-color: $accent-color-faded;
+      border-radius: $radius;
+
+      @media (min-width: $big-tablet-screen) {
+        padding: 1.5rem;
+        max-width: 450px;
+      }
+
+      &__title {
+        font-size: $subtitles;
+        font-weight: $medium;
+      }
+
+      &__amount {
+        display: flex;
+        font-size: $titles;
+        justify-content: center;
+        align-items: center;
+        gap: 1.33rem;
+
+        @media (min-width: $big-tablet-screen) {
+          font-weight: $semi-bold;
+        }
+      }
+
+      &__button {
+        text-decoration: underline;
+        font-size: $small-text;
+        color: $text-color-alt;
+        margin-top: -1.5rem;
+      }
+
+      &__details {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        margin-top: -2rem;
+        text-align: left;
+      }
+    }
   }
 }
 
@@ -290,5 +513,15 @@ const estimatedValue = computed(() => {
   color: $text-color-alt;
   padding: 1rem;
   text-align: center;
+
+  @media (min-width: $big-tablet-screen) {
+    padding: 1.5rem;
+    width: fit-content;
+    flex-direction: row;
+  }
+}
+
+.subtitles {
+  margin-top: -2rem;
 }
 </style>

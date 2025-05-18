@@ -54,6 +54,7 @@ const model = defineModel<boolean>({
 
   &__custom {
     width: 24px;
+    min-width: 24px;
     height: 24px;
     border: 2px solid $accent-color-faded;
     background: $accent-color-faded;

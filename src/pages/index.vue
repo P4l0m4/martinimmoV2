@@ -27,17 +27,16 @@ const isDesktopScreen = computed(() => {
       </div>
 
       <div class="headlines__text">
-        <h1 class="headlines__text__title titles">
+        <h1 class="headlines__text__title">
           Vendez votre bien immobillier sans attendre
         </h1>
-        <h2 class="headlines__text__subtitle subtitles">
-          Offre instantanée, virement sous 48H*
+        <h2 class="headlines__text__subtitle">
+          Offre instantanée, transaction la plus rapide du marché ⚡
         </h2>
       </div>
       <LocationForm />
       <UISteps v-if="isDesktopScreen" />
     </Container>
-    <span class="small-text">*48H après la signature du contrat</span>
   </div>
   <Container class="steps-wrapper" v-if="!isDesktopScreen">
     <UISteps />
@@ -72,10 +71,10 @@ const isDesktopScreen = computed(() => {
     position: absolute;
     right: 0;
     bottom: 0;
-    background-image: linear-gradient(transparent 60%, $secondary-color);
+    background-image: linear-gradient(transparent 50%, $secondary-color);
     z-index: 1;
     width: 100%;
-    height: 100px;
+    height: 300px;
   }
 
   .blob {
@@ -109,7 +108,7 @@ const isDesktopScreen = computed(() => {
       width: 25%;
       height: 35%;
       opacity: 0.3;
-      z-index: 2;
+      z-index: 1;
     }
   }
 }
@@ -137,19 +136,13 @@ const isDesktopScreen = computed(() => {
     gap: 0.5rem;
 
     &__image {
-      width: 40px;
+      width: 35px;
       height: auto;
-      @media (min-width: $big-tablet-screen) {
-        width: 60px;
-      }
     }
 
     &__company {
       color: $text-color-alt;
-      font-size: $subtitles;
-      @media (min-width: $big-tablet-screen) {
-        font-size: $titles;
-      }
+      font-size: 1.625rem;
     }
   }
   &__text {
@@ -157,11 +150,20 @@ const isDesktopScreen = computed(() => {
     flex-direction: column;
     gap: 1rem;
 
-    &__title,
+    &__title {
+      color: $text-color-alt;
+      text-align: center;
+      text-wrap: balance;
+      font-size: 2.625rem;
+      font-weight: $semi-bold;
+    }
+
     &__subtitle {
       color: $text-color-alt;
       text-align: center;
       text-wrap: balance;
+      font-size: 1.5rem;
+      font-weight: $semi-bold;
     }
   }
 

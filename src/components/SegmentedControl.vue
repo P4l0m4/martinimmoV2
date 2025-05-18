@@ -35,53 +35,59 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="switch">
-    <button
-      v-for="(opt, i) in props.options"
-      :key="i"
-      type="button"
-      class="switch__btn"
-      :class="{ active: opt.label === model }"
-      @click="select(opt.label)"
-    >
-      <IconComponent v-if="opt.icon" :icon="opt.icon" class="switch__icon" />
-      <span>{{ opt.label }}</span>
-    </button>
-
-    <div class="switch__indicator" :style="indicatorStyle" />
-  </div>
+  <fieldset class="segmented-control" role="radiogroup">
+    <template v-for="(opt, i) in props.options" :key="i">
+      <input
+        class="segmented-control__input"
+        type="radio"
+        :id="`seg-${i}`"
+        :value="opt.label"
+        v-model="model"
+      />
+      <label class="segmented-control__btn" :for="`seg-${i}`">
+        <IconComponent
+          v-if="opt.icon"
+          :icon="opt.icon"
+          class="segmented-control__icon"
+        />
+        <span>{{ opt.label }}</span>
+      </label>
+    </template>
+    <span class="segmented-control__indicator" :style="indicatorStyle" />
+  </fieldset>
 </template>
-
 <style lang="scss" scoped>
-.switch {
+.segmented-control {
   position: relative;
   display: flex;
-  background: $base-color;
-  border-radius: $radius;
-  overflow: hidden;
-  padding: 0.25rem;
-  height: 44px;
   align-items: center;
-  justify-content: center;
-  border: 2px solid $base-color;
+  justify-content: space-between;
+  background: $accent-color-faded;
+  border-radius: calc($radius/2);
+  overflow: hidden;
+  height: 44px;
+  border: 2px solid transparent;
+
+  &__input {
+    display: none;
+  }
 
   &__btn {
-    flex: 1 1 0;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    background: transparent;
-    border: none;
-    cursor: pointer;
     display: flex;
-    gap: 0.5rem;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    padding: 1rem;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
     z-index: 1;
+    color: $text-color-alt;
     transition: color 0.3s;
+  }
 
-    &.active {
-      color: $base-color;
-    }
+  &__input:checked + &__btn {
+    color: $base-color;
   }
 
   &__indicator {
@@ -89,7 +95,7 @@ onMounted(() => {
     top: 0;
     bottom: 0;
     left: 0;
-    background: $secondary-color;
+    background: $accent-color;
     transition: transform 0.3s;
     border-radius: inherit;
     height: 42px;

@@ -39,7 +39,7 @@ function toggleShowPassword() {
     <IconComponent
       v-if="icon"
       :icon="icon"
-      :color="colors['text-color-faded']"
+      :color="colors['primary-color']"
       size="1.25rem"
     />
 
@@ -83,7 +83,7 @@ function toggleShowPassword() {
   gap: 0.5rem;
   width: 100%;
   align-items: center;
-  background-color: $base-color;
+  background-color: $accent-color-faded;
   border-radius: calc($radius/2);
   padding: 0 0.75rem;
   box-shadow: $shadow-black;
@@ -104,15 +104,15 @@ function toggleShowPassword() {
     padding: 0.65rem 0;
     padding-top: 0.75rem;
     border: none;
-    color: $text-color;
-    background-color: $base-color;
+    color: $text-color-alt;
+    background-color: transparent !important;
     width: 100% !important;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
 
     &::placeholder {
-      color: $text-color-faded;
+      color: $text-color-alt;
       font-size: 1rem;
       font-weight: $regular;
     }

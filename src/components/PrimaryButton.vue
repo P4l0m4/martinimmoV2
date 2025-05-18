@@ -30,7 +30,7 @@ const iconColor = computed(() => {
     case "base-color":
       return colors["secondary-color-faded"];
     case "primary-color":
-      return colors["accent-color-faded"];
+      return colors["accent-color"];
     case "secondary-color":
       return colors["primary-color"];
     case "text-color":
@@ -122,7 +122,7 @@ const iconColor = computed(() => {
 
 .primary-color {
   background-color: $primary-color;
-  color: $text-color;
+  color: $accent-color;
   border: 2px solid $primary-color;
 }
 

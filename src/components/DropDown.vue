@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { colors } from "@/utils/colors";
+import { onClickOutside } from "@vueuse/core";
+import { useTemplateRef } from "vue";
 
 interface Props {
   label: string;
@@ -11,10 +13,17 @@ interface Props {
 defineProps<Props>();
 
 const isDropdownOpen = ref(false);
+
+const target = useTemplateRef<HTMLElement>("target");
+const contentEl = ref<HTMLElement | null>(null);
+
+onClickOutside(target, () => (isDropdownOpen.value = false), {
+  ignore: [contentEl],
+});
 </script>
 <template>
-  <span class="dropdown" @click="isDropdownOpen = !isDropdownOpen"
-    ><IconComponent v-if="icon" :icon :color="colors['primary-color']" />{{
+  <span class="dropdown" ref="target" @click="isDropdownOpen = !isDropdownOpen">
+    <IconComponent v-if="icon" :icon :color="colors['primary-color']" />{{
       label
     }}
     <template v-if="number">({{ number }})</template
@@ -22,7 +31,11 @@ const isDropdownOpen = ref(false);
       style="margin-left: auto"
       :icon="isDropdownOpen ? 'caret_down_bold' : 'caret_right_bold'" /></span
   ><Transition>
-    <div class="estimation-form__checkboxes" v-if="isDropdownOpen">
+    <div
+      class="estimation-form__checkboxes"
+      ref="contentEl"
+      v-if="isDropdownOpen"
+    >
       <slot /></div
   ></Transition>
 </template>

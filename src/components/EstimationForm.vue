@@ -8,6 +8,7 @@ import {
   maxValue,
   numeric,
 } from "@vuelidate/validators";
+import SegmentedControl from "./SegmentedControl.vue";
 
 const emit = defineEmits<{
   submit: [
@@ -19,9 +20,12 @@ const emit = defineEmits<{
       typeLocal: string | undefined;
       DPE?: string | undefined;
       equipments: string[];
+      discalifications?: string[];
     }
   ];
 }>();
+
+const step = ref(0);
 
 const checkboxOptions = [
   { key: "terrasse", label: "Terrasse", belongsTo: ["Appartement", "Maison"] },
@@ -49,6 +53,29 @@ const checkboxOptions = [
     belongsTo: ["Appartement", "Maison"],
   },
   { key: "parking", label: "Parking", belongsTo: ["Appartement", "Maison"] },
+];
+
+const discalificationCheckboxOptions = [
+  {
+    key: "ESN",
+    label: "Espace Naturel Sensible",
+  },
+  {
+    key: "AMH",
+    label: "Abords de Monuments Historiques",
+  },
+  {
+    key: "monument",
+    label: "Monument Historique",
+  },
+  {
+    key: "ZIRed",
+    label: "Zone Inondable (PPRI rouge)",
+  },
+  {
+    key: "ZIBlue",
+    label: "Zone Inondable (PPRI bleu foncé)",
+  },
 ];
 
 const form = reactive({
@@ -105,12 +132,15 @@ const surfaceErrors = computed(() => {
 
 const surfaceHabitableErrors = computed(() => {
   const e: string[] = [];
-  if (!v$.value.surface.$dirty) return e;
-  if (v$.value.surface.required.$invalid) e.push("Ajoutez la surface du bien");
-  if (v$.value.surface.integer.$invalid)
+  if (!v$.value.surfaceHabitable.$dirty) return e;
+  if (v$.value.surfaceHabitable.required.$invalid)
+    e.push("Ajoutez la surface du bien");
+  if (v$.value.surfaceHabitable.integer.$invalid)
     e.push("La surface doit être un nombre entier");
-  if (v$.value.surface.minValue.$invalid) e.push("Surface minimale : 10 m²");
-  if (v$.value.surface.maxValue.$invalid) e.push("Surface maximale : 600 m²");
+  if (v$.value.surfaceHabitable.minValue.$invalid)
+    e.push("Surface minimale : 10 m²");
+  if (v$.value.surfaceHabitable.maxValue.$invalid)
+    e.push("Surface maximale : 600 m²");
   return e;
 });
 
@@ -164,6 +194,34 @@ const selectedEquipments = computed(() => {
     .map((opt) => opt.key);
 });
 
+const selectedDiscalifications = computed(() => {
+  return discalificationCheckboxOptions
+    .filter((opt) => form[opt.key])
+    .map((opt) => opt.key);
+});
+
+async function checkStep0Validation() {
+  await Promise.all([
+    v$.value.typeLocal.$validate(),
+    v$.value.DPE.$validate(),
+    v$.value.expectedRenovationDiscount.$validate(),
+  ]);
+
+  const areFieldsValid = !(
+    v$.value.typeLocal.$invalid ||
+    v$.value.DPE.$invalid ||
+    v$.value.expectedRenovationDiscount.$invalid
+  );
+
+  if (areFieldsValid) {
+    step.value = 1;
+  } else {
+    v$.value.typeLocal.$touch();
+    v$.value.DPE.$touch();
+    v$.value.expectedRenovationDiscount.$touch();
+  }
+}
+
 async function handleSubmit() {
   if (!(await v$.value.$validate())) return;
 
@@ -177,12 +235,100 @@ async function handleSubmit() {
     typeLocal: form.typeLocal,
     DPE: form.DPE,
     equipments: selectedEquipments.value,
+    discalifications: selectedDiscalifications.value,
   });
 }
 </script>
 
 <template>
-  <form class="estimation-form" @submit.prevent="handleSubmit">
+  <form
+    class="estimation-form"
+    @submit.prevent="handleSubmit"
+    v-show="step === 0"
+  >
+    <SegmentedControl
+      id="typeLocal"
+      name="typeLocal"
+      label="Type de bien"
+      v-model="form.typeLocal"
+      :error="typeLocalErrors[0]"
+      :options="[
+        { label: 'Appartement', icon: 'building_apartment' },
+        { label: 'Maison', icon: 'house_line' },
+      ]"
+    />
+    <DropDown
+      label="Avantages"
+      :number="selectedEquipments.length"
+      icon="trophy_fill"
+    >
+      <div class="estimation-form__checkboxes">
+        <CheckboxField
+          v-for="opt in visibleCheckboxes"
+          :key="opt.key"
+          :id="opt.key"
+          :name="opt.key"
+          :label="opt.label"
+          v-model="form[opt.key]"
+        /></div
+    ></DropDown>
+
+    <DropDown
+      label="Particularités"
+      :number="selectedDiscalifications.length"
+      icon="hand_waving_fill"
+    >
+      <div class="estimation-form__discalification-checkboxes">
+        <CheckboxField
+          v-for="opt in discalificationCheckboxOptions"
+          :key="opt.key"
+          :id="opt.key"
+          :name="opt.key"
+          :label="opt.label"
+          v-model="form[opt.key]"
+        /></div
+    ></DropDown>
+    <RenovationDifficulty v-model="form.expectedRenovationDiscount" />
+    <SelectField
+      id="DPE"
+      name="DPE"
+      label="DPE"
+      v-model="form.DPE"
+      :error="DPEErrors[0]"
+      :options="['A', 'B', 'C', 'D', 'E', 'F', 'G']"
+      defaultLabel="DPE"
+      icon="thermometer_simple_bold"
+      :split="true"
+    />
+
+    <PrimaryButton
+      variant="primary-color"
+      icon="arrow_right"
+      @click="checkStep0Validation"
+    >
+      Étape suivante
+    </PrimaryButton>
+
+    <div
+      class="errors"
+      v-if="
+        expectedRenovationDiscountErrors[0] ||
+        typeLocalErrors[0] ||
+        DPEErrors[0]
+      "
+    >
+      <span v-for="e in expectedRenovationDiscountErrors" :key="e">{{
+        e
+      }}</span>
+      <span v-for="e in typeLocalErrors" :key="e">{{ e }}</span>
+      <span v-for="e in DPEErrors" :key="e">{{ e }}</span>
+    </div>
+  </form>
+  <form
+    class="estimation-form"
+    @submit.prevent="handleSubmit"
+    v-show="step === 1"
+  >
     <InputField
       id="surface"
       name="surface"
@@ -212,68 +358,23 @@ async function handleSubmit() {
       type="number"
       v-model="form.pieces"
       :error="piecesErrors[0]"
+      icon="door_open_fill"
     />
 
-    <SelectField
-      id="DPE"
-      name="DPE"
-      label="DPE"
-      v-model="form.DPE"
-      :error="DPEErrors[0]"
-      :options="['A', 'B', 'C', 'D', 'E', 'F', 'G']"
-      defaultLabel="DPE"
-      icon="thermometer_simple_bold"
-    />
-
-    <RenovationDifficulty v-model="form.expectedRenovationDiscount" />
-    <SwitchInput
-      id="typeLocal"
-      name="typeLocal"
-      label="Type de bien"
-      v-model="form.typeLocal"
-      :error="typeLocalErrors[0]"
-      :options="[
-        { label: 'Appartement', icon: 'building_apartment' },
-        { label: 'Maison', icon: 'house_line' },
-      ]"
-    />
-    <DropDown
-      label="Avantages"
-      :number="selectedEquipments.length"
-      icon="trophy_fill"
+    <PrimaryButton
+      variant="primary-color"
+      @click="handleSubmit"
+      icon="calculator"
     >
-      <div class="estimation-form__checkboxes">
-        <CheckboxField
-          v-for="opt in visibleCheckboxes"
-          :key="opt.key"
-          :id="opt.key"
-          :name="opt.key"
-          :label="opt.label"
-          v-model="form[opt.key]"
-        /></div
-    ></DropDown>
-
-    <PrimaryButton variant="accent-color" @click="handleSubmit">
       Lancer l'estimation
     </PrimaryButton>
+    <button class="estimation-form__previous-step-button" @click="step = 0">
+      Revenir à l'étape précédente
+    </button>
 
-    <div
-      class="errors"
-      v-if="
-        surfaceErrors[0] ||
-        piecesErrors[0] ||
-        expectedRenovationDiscountErrors[0] ||
-        typeLocalErrors[0] ||
-        DPEErrors[0]
-      "
-    >
+    <div class="errors" v-if="surfaceErrors[0] || piecesErrors[0]">
       <span v-for="e in surfaceErrors" :key="e">{{ e }}</span>
       <span v-for="e in piecesErrors" :key="e">{{ e }}</span>
-      <span v-for="e in expectedRenovationDiscountErrors" :key="e">{{
-        e
-      }}</span>
-      <span v-for="e in typeLocalErrors" :key="e">{{ e }}</span>
-      <span v-for="e in DPEErrors" :key="e">{{ e }}</span>
     </div>
   </form>
 </template>
@@ -298,6 +399,18 @@ async function handleSubmit() {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 0.5rem;
+  }
+
+  &__discalification-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__previous-step-button {
+    text-decoration: underline;
+    font-size: $small-text;
+    color: $text-color-alt;
   }
 }
 

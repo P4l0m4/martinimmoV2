@@ -66,6 +66,7 @@ footer {
   gap: 2rem;
   display: flex;
   flex-direction: column;
+  border-top: 1px solid $accent-color-faded;
 
   .first-box {
     display: flex;
@@ -80,13 +81,14 @@ footer {
       align-items: center;
 
       &__logo {
-        width: 40px;
-        height: 40px;
+        width: 35px;
+        height: 35px;
       }
 
       &__title {
         color: $text-color-alt;
-        font-size: $titles;
+        font-size: 1.625rem;
+        font-weight: $semi-bold;
       }
     }
   }
@@ -96,10 +98,11 @@ footer {
     gap: 1rem;
     list-style: none;
     flex-direction: column;
+    margin-top: 0.5rem;
 
     &__title {
       color: $text-color-alt;
-      font-size: $subtitles;
+      font-size: 1.05rem;
     }
 
     &__li {
@@ -133,7 +136,8 @@ footer {
 
     @media (min-width: $big-tablet-screen) {
       flex-direction: row;
-      margin-left: 2rem;
+      max-width: calc(100vw - 6rem);
+      margin: 0 auto;
     }
 
     & a {

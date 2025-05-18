@@ -29,6 +29,8 @@ watch(
   },
   { immediate: true }
 );
+
+const filledPct = computed(() => `${(level.value / 3) * 100}%`);
 </script>
 
 <template>
@@ -49,6 +51,7 @@ watch(
       max="3"
       step="1"
       v-model="level"
+      :style="{ '--filled': filledPct }"
     />
 
     <span class="renovation-difficulty__legend">{{ legends[level] }}</span>
@@ -80,27 +83,30 @@ input[type="range"] {
   border: none !important;
   background: transparent;
   cursor: pointer;
-}
 
-/* Chrome / Edge / Safari */
-input[type="range"]::-webkit-slider-runnable-track {
-  height: 16px;
-  border-radius: $radius;
-  background: linear-gradient(90deg, $base-color 0%, $accent-color 100%);
-}
+  /* Chrome / Edge / Safari */
+  &::-webkit-slider-runnable-track,
+  &::-moz-range-track {
+    background: transparent;
+    height: 16px;
+    border-radius: $radius;
+  }
 
-/* Firefox  */
-input[type="range"]::-moz-range-track {
-  height: 16px;
-  border-radius: $radius;
-  background: linear-gradient(90deg, $base-color 0%, $accent-color 100%);
+  // gradient appliqué en inline (use fallback for browsers)
+  background: linear-gradient(
+    to right,
+    $accent-color 0,
+    $accent-color var(--filled),
+    $accent-color-faded var(--filled),
+    $accent-color-faded 100%
+  );
 }
 
 /* IE / Edge Legacy */
 input[type="range"]::-ms-track {
   height: 16px;
   border-radius: $radius;
-  background: linear-gradient(90deg, $base-color 0%, $accent-color 100%);
+  background: $accent-color-faded;
   border: none;
   color: transparent; /* sinon la piste est rayée sur IE */
 }
@@ -108,11 +114,10 @@ input[type="range"]::-ms-track {
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 24px;
-  height: 32px;
+  height: 34px;
   border-radius: $radius;
   background: $base-color;
   border: 2px solid $accent-color;
-  margin-top: -8px;
 }
 input[type="range"]::-moz-range-thumb {
   width: 24px;

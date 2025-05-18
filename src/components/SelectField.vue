@@ -19,6 +19,11 @@ defineProps({
     type: String,
     required: false,
   },
+  split: {
+    type: Boolean,
+    default: false,
+    required: false,
+  },
 });
 
 onClickOutside(target, () => {
@@ -58,31 +63,36 @@ function selectOption(option: string) {
     <span
       class="dropdown__selected"
       @click="toggleDropdown"
-      :class="{ shake: error }"
+      :class="{ shake: error, 'dropdown__selected--open': isDropdownOpen }"
     >
       <IconComponent
         v-if="icon"
         :icon
         size="1.25rem"
-        :color="colors['text-color-faded']" />
+        :color="colors['primary-color']" />
 
       {{ optionSelected.length > 0 ? optionSelected : defaultLabel }}
-      <span style="opacity: 0.6; margin-left: auto">
+      <span style="margin-left: auto">
         <IconComponent
           :icon="isDropdownOpen ? 'caret_up_bold' : 'caret_down_bold'"
           size="1.25rem"
-          :color="colors['text-color']" /></span
+          :color="colors['primary-color']" /></span
     ></span>
-    <div class="dropdown__content" v-if="isDropdownOpen">
+    <div
+      class="dropdown__content"
+      :class="{ 'dropdown__content--split': split }"
+      v-if="isDropdownOpen"
+    >
       <span
         class="dropdown__content__option"
         v-for="option in options"
         :key="option"
         @click="selectOption(option)"
         :style="{
-          opacity: optionSelected === option ? 0.6 : 1,
           backgroundColor:
-            optionSelected === option ? colors['base-color'] : '',
+            optionSelected === option
+              ? colors['accent-color-faded']
+              : undefined,
         }"
         >{{ option }}</span
       >
@@ -100,15 +110,20 @@ function selectOption(option: string) {
   &__selected {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.25rem;
     padding: 0.75rem 1rem;
     width: 100%;
-    background-color: $base-color;
-    color: $text-color;
+    background-color: $accent-color-faded;
+    color: $text-color-alt;
+    border: 2px solid $accent-color-faded;
     border-radius: calc($radius/2);
     cursor: pointer;
     white-space: nowrap;
     max-height: 50px;
+
+    &--open {
+      border: 2px solid $accent-color;
+    }
   }
 
   &__content {
@@ -127,7 +142,13 @@ function selectOption(option: string) {
     @media (min-width: $big-tablet-screen) {
       max-height: 200px;
       top: -216px;
+    }
+
+    &--split {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       overflow: hidden;
+      top: -146px;
     }
 
     &__option {

@@ -1,22 +1,5 @@
 <script setup lang="ts">
-const steps = [
-  {
-    name: "Estimation et offre",
-    description: "Estimation en ligne de votre bien",
-  },
-  {
-    name: "Visite sous 48h",
-    description: "Visite rapide par un expert",
-  },
-  {
-    name: "Signature",
-    description: "Signature du compromis de vente",
-  },
-  {
-    name: "Virement instantané",
-    description: "Virement de la somme sur votre compte",
-  },
-];
+import { steps } from "@/utils/data";
 </script>
 <template>
   <div class="steps">
@@ -47,8 +30,18 @@ const steps = [
     gap: 1rem;
     align-items: center;
 
+    @media (min-width: $tablet-screen) {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    @media (min-width: $big-tablet-screen) {
+      flex-direction: row;
+      text-align: left;
+    }
+
     &__number {
-      font-size: 3.25rem;
+      font-size: 4rem;
       font-weight: $extra-bold;
       color: $accent-color;
     }
@@ -56,6 +49,7 @@ const steps = [
     &__details {
       display: flex;
       flex-direction: column;
+      gap: 0.5rem;
 
       &__name {
         font-size: 1.5rem;
@@ -65,7 +59,8 @@ const steps = [
 
       &__description {
         font-size: 1rem;
-        color: $primary-color-faded;
+        color: $primary-color;
+        font-weight: $regular;
       }
     }
   }

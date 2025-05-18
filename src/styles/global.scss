@@ -50,9 +50,9 @@ button {
 
 input,
 textarea {
-  caret-color: $text-color;
+  caret-color: $text-color-alt;
   background-color: transparent;
-  color: $text-color;
+  color: $text-color-alt;
 
   &:focus {
     border: 2px solid $text-color;
@@ -267,11 +267,11 @@ details > summary::-webkit-details-marker /* Safari */ {
 }
 
 .titles {
-  font-size: $titles;
-  font-weight: $medium;
+  font-size: calc($titles - 1rem);
+  font-weight: $semi-bold;
 
   @media (min-width: $laptop-screen) {
-    font-size: calc($titles + 1rem);
+    font-size: $titles;
   }
 }
 
@@ -279,6 +279,7 @@ details > summary::-webkit-details-marker /* Safari */ {
   font-size: calc($subtitles - 0.25rem);
   line-height: 1.25;
   font-weight: $medium;
+
   @media (min-width: $tablet-screen) {
     font-size: $subtitles;
     line-height: 1.5;

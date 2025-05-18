@@ -3,18 +3,21 @@ import { computed } from "vue";
 import { useRuntimeConfig } from "#app";
 import { useAddressStore } from "@/stores/addressStore";
 import { isMobile } from "@/utils/otherFunctions";
+import { colors } from "@/utils/colors";
 
 const cfg = useRuntimeConfig();
 const store = useAddressStore();
 const address = ref(store.readFromLocalStorage());
 
 const surface = ref();
+const surfaceHabitable = ref();
 const pieces = ref();
 const typeLocal = ref();
 const expectedRenovationDiscount = ref(0);
 const DPE = ref();
 const isAdressInDowntown = ref(false);
 const equipments = ref<string[]>([]);
+const discalifications = ref<string[]>([]);
 
 const mapSrc = computed(() => {
   if (!address.value?.latLng) return null;
@@ -92,20 +95,28 @@ const postalCode = computed(() => {
 
 const showDVFResults = ref(false);
 
+const showForm = computed(() => {
+  return !!(mapSrc.value && !showDVFResults.value);
+});
+
 function dataFromEstimationForm(data: {
   surface: number;
+  surfaceHabitable: number;
   pieces: number;
   expectedRenovationDiscount: number;
   typeLocal: string;
   DPE: string;
   equipments: string[];
+  discalifications: string[];
 }) {
   surface.value = data.surface;
+  surfaceHabitable.value = data.surface;
   pieces.value = data.pieces;
   typeLocal.value = data.typeLocal;
   expectedRenovationDiscount.value = data.expectedRenovationDiscount;
   DPE.value = data.DPE;
   equipments.value = [...data.equipments];
+  discalifications.value = [...data.discalifications];
   showDVFResults.value = true;
 }
 
@@ -118,7 +129,16 @@ watch(address, async () => {
 <template>
   <Container>
     <div class="estimation-en-ligne">
-      <div class="estimation-en-ligne__map-container">
+      <div
+        class="estimation-en-ligne__map-container"
+        v-show="!showDVFResults && address"
+      >
+        <img
+          class="map"
+          v-if="mapSrc"
+          :src="mapSrc"
+          alt="Carte de l'adresse sélectionnée"
+        />
         <p
           v-if="address"
           class="estimation-en-ligne__map-container__address"
@@ -126,32 +146,36 @@ watch(address, async () => {
         >
           {{ address.formatted }}
 
-          <IconComponent
-            class="address__icon"
-            v-if="address"
-            icon="xx"
-            size="1.5rem"
-          />
+          <IconComponent class="address__icon" icon="x_bold" size="1.15rem" />
         </p>
+        <span
+          v-if="isAdressInDowntown"
+          class="estimation-en-ligne__map-container__centre-ville"
+        >
+          <IconComponent
+            icon="map_pin_fill"
+            size="1rem"
+            :color="colors['text-color']"
+          />
+          Votre bien est en centre ville
+        </span>
+      </div>
 
-        <img
-          class="map"
-          v-if="address && mapSrc"
-          :src="mapSrc"
-          alt="Carte de l'adresse sélectionnée"
-        />
-        <LocationForm
-          v-else
-          @refresh="
-            (address = store.readFromLocalStorage()), (showDVFResults = false)
-          "
-        />
+      <div v-if="!address" class="estimation-en-ligne__wrapper">
+        <h1 class="titles">Estimez votre bien en un clic</h1>
+        <h2 class="subtitles">
+          Entrez l'adresse de votre bien pour obtenir une offre instantanée
+        </h2>
+        <Transition
+          ><LocationForm
+            @refresh="
+              (address = store.readFromLocalStorage()), (showDVFResults = false)
+            "
+        /></Transition>
       </div>
 
       <Transition
-        ><EstimationForm
-          v-show="!showDVFResults && address"
-          @submit="dataFromEstimationForm"
+        ><EstimationForm v-if="showForm" @submit="dataFromEstimationForm"
       /></Transition>
       <Transition
         ><DVFResults
@@ -159,11 +183,13 @@ watch(address, async () => {
           :postalCode="postalCode"
           :typeLocal="typeLocal"
           :surface="surface"
+          :surfaceHabitable="surfaceHabitable"
           :pieces="pieces"
           :expectedRenovationDiscount="expectedRenovationDiscount"
           :DPE="DPE"
           :equipments="equipments"
           :isDownTown="isAdressInDowntown"
+          :discalifications="discalifications"
           @redoEstimate="showDVFResults = false"
       /></Transition>
     </div>
@@ -175,45 +201,40 @@ watch(address, async () => {
   flex-direction: column;
   align-items: center;
   gap: 2rem;
-  padding: 2rem 0;
+  height: fit-content;
 
   @media (min-width: $big-tablet-screen) {
     flex-direction: row;
     justify-content: center;
-    padding: 4rem 0;
     gap: 4rem;
   }
 
   &__map-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 1rem;
+    padding: 1.5rem;
+    background-color: $base-color;
+    border-radius: $radius;
     width: 100%;
     max-width: 550px;
-    position: relative;
 
     @media (min-width: $big-tablet-screen) {
-      gap: 2rem;
+      gap: 1.5rem;
       height: 100%;
+      max-height: 500px;
     }
 
     &__address {
       font-size: 1rem;
-      color: $primary-color;
-      text-align: center;
+      font-weight: $semi-bold;
+      color: $text-color;
       display: flex;
       align-items: center;
       gap: 0.5rem;
       cursor: pointer;
-      position: absolute;
-      top: 1rem;
-      left: 1rem;
-      right: 1rem;
+      height: fit-content;
       width: fit-content;
-      background-color: $secondary-color-faded;
-      padding: 1rem;
-      border-radius: $radius;
       max-width: 100%;
 
       @media (min-width: $big-tablet-screen) {
@@ -227,12 +248,34 @@ watch(address, async () => {
         }
       }
     }
+
+    &__centre-ville {
+      display: flex;
+      align-items: center;
+      font-size: 1rem;
+      gap: 0.5rem;
+      color: $text-color;
+      margin-top: -0.75rem;
+    }
+
     .map {
       width: 100%;
       height: 100%;
+      max-height: 400px;
       object-fit: cover;
       object-position: center;
-      border-radius: $radius;
+      border-radius: 1.5rem;
+    }
+  }
+
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+
+    .subtitles {
+      margin-top: -2rem;
     }
   }
 }

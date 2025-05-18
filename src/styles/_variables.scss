@@ -11,7 +11,7 @@ $secondary-color: #00065c;
 $accent-color: #4885de;
 $text-color: #232323;
 $text-color-alt: $primary-color;
-$error-color: #bb0025;
+$error-color: #ff0101;
 $success-color: #00a86b;
 $loading-color: $secondary-color;
 $pink-color: #ff91af;
@@ -55,7 +55,7 @@ $golden-number: 1.618;
 
 //FONT SIZES
 $small-text: 0.8rem;
-$subtitles: calc(1rem * $golden-number);
-$titles: calc($subtitles * $golden-number);
+$subtitles: 1.5rem;
+$titles: 2.625rem;
 
 $blur: 2px;
