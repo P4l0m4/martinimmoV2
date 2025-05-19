@@ -39,6 +39,12 @@ input {
   border-radius: $radius;
 }
 
+button {
+  border: 1px solid transparent;
+  background-color: transparent;
+  cursor: pointer;
+}
+
 input,
 textarea {
   caret-color: $text-color-alt;

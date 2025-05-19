@@ -8,7 +8,7 @@ export const steps = [
     description: "Un de nos experts réalise une visite express de votre bien ",
   },
   {
-    name: "Signature",
+    name: "Dépôt des documents",
     description:
       "Nous vous aidons à récupérer les documents nécessaires à la vente",
   },

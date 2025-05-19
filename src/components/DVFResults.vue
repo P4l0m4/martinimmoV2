@@ -16,6 +16,7 @@ interface Props {
   isDownTown: boolean;
   equipments?: string[];
   discalifications?: string[];
+  groundFloor: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -99,6 +100,7 @@ watch(
     props.limit,
     props.typeLocal,
     props.discalifications,
+    props.groundFloor,
   ],
   () => {
     fetchData();
@@ -170,6 +172,12 @@ const dpePct = computed(() => {
   }
 });
 
+const groundFloorFactor = computed(() => {
+  if (!props.groundFloor) return 1; // pas de décote
+  if (props.typeLocal === "Appartement") return 0.92; // -8%
+  return 1; // Maison = pas de décote appliquée
+});
+
 const avgPricePerSqm = computed(() => {
   if (records.value.length === 0) return null;
 
@@ -189,7 +197,7 @@ const avgPricePerSqm = computed(() => {
 
 const marketValue = computed(() => {
   if (!avgPricePerSqm.value) return null;
-  return avgPricePerSqm.value * props.surface; // € avant ajustements
+  return avgPricePerSqm.value * props.surface;
 });
 
 const renovationFactor = computed(
@@ -207,7 +215,8 @@ const estimatedValue = computed(() => {
       renovationFactor.value *
       dpeFactor.value *
       downtownFactor.value *
-      equipmentsFactor.value
+      equipmentsFactor.value *
+      groundFloorFactor.value
   );
 });
 
@@ -256,8 +265,8 @@ const offeredValue = computed(() => {
           <DropDown label="Détails">
             <div class="dvf-results__offer__wrapper__details">
               <span v-if="averageValue">
-                Valeur fonctière moyenne
-                {{ formattedValue(averageValue) }}</span
+                Valeur fonctière moyenne dans ce secteur:
+                {{ formattedValue(averageValue) }}.</span
               >
               <span>
                 Estimation basée sur {{ records.length }} transactions
@@ -297,13 +306,13 @@ const offeredValue = computed(() => {
         <DropDown label="Détails">
           <div class="dvf-results__estimate__wrapper__details">
             <span v-if="averageValue">
-              Valeur fonctière moyenne {{ formattedValue(averageValue) }}</span
+              Valeur fonctière moyenne dans ce secteur:
+              {{ formattedValue(averageValue) }}.</span
             >
             <span>
               Estimation basée sur {{ records.length }} transactions précédentes
               dans ce secteur.</span
             >
-            <pre>{{ props }}</pre>
           </div>
         </DropDown>
       </div>
@@ -365,6 +374,7 @@ const offeredValue = computed(() => {
       align-items: center;
 
       @media (min-width: $big-tablet-screen) {
+        min-width: 450px;
         max-width: 450px;
       }
 
@@ -468,6 +478,7 @@ const offeredValue = computed(() => {
 
       @media (min-width: $big-tablet-screen) {
         padding: 1.5rem;
+        min-width: 450px;
         max-width: 450px;
       }
 

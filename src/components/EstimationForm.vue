@@ -21,6 +21,7 @@ const emit = defineEmits<{
       DPE?: string | undefined;
       equipments: string[];
       discalifications?: string[];
+      groundFloor: boolean;
     }
   ];
 }>();
@@ -89,6 +90,7 @@ const form = reactive({
     (acc: any, o: { key: any }) => ({ ...acc, [o.key]: false }),
     {}
   ),
+  groundFloor: undefined as Boolean | undefined,
 });
 
 const rules = {
@@ -203,21 +205,17 @@ const selectedDiscalifications = computed(() => {
 async function checkStep0Validation() {
   await Promise.all([
     v$.value.typeLocal.$validate(),
-    v$.value.DPE.$validate(),
     v$.value.expectedRenovationDiscount.$validate(),
   ]);
 
   const areFieldsValid = !(
-    v$.value.typeLocal.$invalid ||
-    v$.value.DPE.$invalid ||
-    v$.value.expectedRenovationDiscount.$invalid
+    v$.value.typeLocal.$invalid || v$.value.expectedRenovationDiscount.$invalid
   );
 
   if (areFieldsValid) {
     step.value = 1;
   } else {
     v$.value.typeLocal.$touch();
-    v$.value.DPE.$touch();
     v$.value.expectedRenovationDiscount.$touch();
   }
 }
@@ -236,6 +234,7 @@ async function handleSubmit() {
     DPE: form.DPE,
     equipments: selectedEquipments.value,
     discalifications: selectedDiscalifications.value,
+    groundFloor: form.groundFloor,
   });
 }
 </script>
@@ -288,17 +287,14 @@ async function handleSubmit() {
           v-model="form[opt.key]"
         /></div
     ></DropDown>
+
     <RenovationDifficulty v-model="form.expectedRenovationDiscount" />
-    <SelectField
-      id="DPE"
-      name="DPE"
-      label="DPE"
-      v-model="form.DPE"
-      :error="DPEErrors[0]"
-      :options="['A', 'B', 'C', 'D', 'E', 'F', 'G']"
-      defaultLabel="DPE"
-      icon="thermometer_simple_bold"
-      :split="true"
+
+    <CheckboxField
+      id="groundFloor"
+      name="groundFloor"
+      label="Situé en rez-de-chaussée"
+      v-model="form.groundFloor"
     />
 
     <PrimaryButton
@@ -311,17 +307,12 @@ async function handleSubmit() {
 
     <div
       class="errors"
-      v-if="
-        expectedRenovationDiscountErrors[0] ||
-        typeLocalErrors[0] ||
-        DPEErrors[0]
-      "
+      v-if="expectedRenovationDiscountErrors[0] || typeLocalErrors[0]"
     >
       <span v-for="e in expectedRenovationDiscountErrors" :key="e">{{
         e
       }}</span>
       <span v-for="e in typeLocalErrors" :key="e">{{ e }}</span>
-      <span v-for="e in DPEErrors" :key="e">{{ e }}</span>
     </div>
   </form>
   <form
@@ -361,6 +352,18 @@ async function handleSubmit() {
       icon="door_open_fill"
     />
 
+    <SelectField
+      id="DPE"
+      name="DPE"
+      label="DPE"
+      v-model="form.DPE"
+      :error="DPEErrors[0]"
+      :options="['A', 'B', 'C', 'D', 'E', 'F', 'G']"
+      defaultLabel="DPE"
+      icon="thermometer_simple_bold"
+      :split="true"
+    />
+
     <PrimaryButton
       variant="primary-color"
       @click="handleSubmit"
@@ -372,9 +375,13 @@ async function handleSubmit() {
       Revenir à l'étape précédente
     </button>
 
-    <div class="errors" v-if="surfaceErrors[0] || piecesErrors[0]">
+    <div
+      class="errors"
+      v-if="surfaceErrors[0] || piecesErrors[0] || DPEErrors[0]"
+    >
       <span v-for="e in surfaceErrors" :key="e">{{ e }}</span>
       <span v-for="e in piecesErrors" :key="e">{{ e }}</span>
+      <span v-for="e in DPEErrors" :key="e">{{ e }}</span>
     </div>
   </form>
 </template>

@@ -18,6 +18,7 @@ const DPE = ref();
 const isAdressInDowntown = ref(false);
 const equipments = ref<string[]>([]);
 const discalifications = ref<string[]>([]);
+const groundFloor = ref(false);
 
 const mapSrc = computed(() => {
   if (!address.value?.latLng) return null;
@@ -108,6 +109,7 @@ function dataFromEstimationForm(data: {
   DPE: string;
   equipments: string[];
   discalifications: string[];
+  groundFloor: boolean;
 }) {
   surface.value = data.surface;
   surfaceHabitable.value = data.surface;
@@ -117,6 +119,7 @@ function dataFromEstimationForm(data: {
   DPE.value = data.DPE;
   equipments.value = [...data.equipments];
   discalifications.value = [...data.discalifications];
+  groundFloor.value = data.groundFloor;
   showDVFResults.value = true;
 }
 
@@ -190,6 +193,7 @@ watch(address, async () => {
           :equipments="equipments"
           :isDownTown="isAdressInDowntown"
           :discalifications="discalifications"
+          :groundFloor="groundFloor"
           @redoEstimate="showDVFResults = false"
       /></Transition>
     </div>
