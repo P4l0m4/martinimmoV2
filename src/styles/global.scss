@@ -35,17 +35,8 @@ a {
   color: $text-color;
 }
 
-button,
 input {
   border-radius: $radius;
-}
-
-button {
-  border: 1px solid transparent;
-  background-color: transparent;
-  font-size: 1.25rem;
-  font-weight: $regular;
-  cursor: pointer;
 }
 
 input,
