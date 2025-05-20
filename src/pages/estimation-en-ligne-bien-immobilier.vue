@@ -149,6 +149,7 @@ watch(address, async () => {
           :src="mapSrc"
           alt="Carte de l'adresse sélectionnée"
         />
+        <UICircularLoader v-else :color="colors['accent-color']" />
         <p
           v-if="address"
           class="estimation-en-ligne__map-container__address"
