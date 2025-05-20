@@ -325,7 +325,7 @@ const offeredValue = computed(() => {
           immobiliers partenaires
         </p>
         <PrimaryButton variant="accent-color" icon="phone_fill"
-          >Être recontacté par un agent immobilier</PrimaryButton
+          >Être recontacté par un agent</PrimaryButton
         >
         <button class="dvf-results__estimate__external-contact__button">
           Politique d'achat
