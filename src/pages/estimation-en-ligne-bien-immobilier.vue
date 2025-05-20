@@ -157,7 +157,7 @@ onMounted(() => {
           alt="Carte de l'adresse sélectionnée"
           @load="mapLoaded = true"
         />
-        <div class="map__loader" v-if="!mapLoaded">
+        <div class="map-loader" v-if="!mapLoaded">
           <UICircularLoader :color="colors['accent-color']" />
         </div>
         <p
@@ -253,6 +253,8 @@ onMounted(() => {
     border-radius: $radius;
     width: 100%;
     max-width: 550px;
+    height: 420px;
+    position: relative;
 
     @media (min-width: $big-tablet-screen) {
       padding: 1.5rem;
@@ -301,13 +303,21 @@ onMounted(() => {
       object-fit: cover;
       object-position: center;
       border-radius: 1.5rem;
+    }
 
-      &__loader {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    .map-loader {
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      right: 1rem;
+      bottom: 4.31rem;
+      margin: auto;
+
+      @media (min-width: $big-tablet-screen) {
+        left: 1.5rem;
+        top: 1.5rem;
+        right: 1.5rem;
+        bottom: 5.31rem;
       }
     }
   }

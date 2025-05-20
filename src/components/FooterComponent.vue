@@ -82,7 +82,7 @@
             Estimez votre bien
           </h4>
         </div>
-        <p class="paragraphs">Estimation 100% en ligne, rapide et gratuite</p>
+        <p class="paragraphs">Estimation 100% en ligne, rapide et gratuite.</p>
         <PrimaryButton variant="accent-color" icon="arrow_right"
           >Obtenir une offre</PrimaryButton
         >
