@@ -83,8 +83,10 @@
           </h4>
         </div>
         <p class="paragraphs">Estimation 100% en ligne, rapide et gratuite.</p>
-        <PrimaryButton variant="accent-color" icon="arrow_right"
-          >Obtenir une offre</PrimaryButton
+        <NuxtLink to="/estimation-en-ligne-bien-immobilier"
+          ><PrimaryButton variant="accent-color" icon="arrow_right"
+            >Obtenir une offre</PrimaryButton
+          ></NuxtLink
         >
       </div>
     </div>

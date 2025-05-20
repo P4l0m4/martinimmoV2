@@ -2,7 +2,10 @@
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
-  ssr: false,
+  ssr: true,
+  nitro: {
+    preset: "netlify",
+  },
   srcDir: "src/",
   css: ["@/styles/global.scss"],
   modules: ["dayjs-nuxt", "@pinia/nuxt"],
