@@ -149,7 +149,7 @@ onMounted(() => {
       >
         <img
           class="map"
-          v-if="mapSrc"
+          v-if="mapSrc && mapSrc.length > 0"
           :src="mapSrc"
           alt="Carte de l'adresse sélectionnée"
         />
