@@ -10,9 +10,6 @@
             >Vendre mon bien</NuxtLink
           >
         </li>
-        <li class="header__nav__ul__li">
-          <NuxtLink to="/FAQ" exact>FAQ</NuxtLink>
-        </li>
       </ul>
     </nav>
   </header>

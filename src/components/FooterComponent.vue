@@ -1,42 +1,95 @@
 <template>
-  <footer>
-    <GridContainer>
-      <div class="first-box">
-        <div class="title-section">
+  <footer class="footer">
+    <div class="footer__links-container">
+      <div class="footer__links-container__special-box">
+        <NuxtLink
+          class="footer__links-container__special-box__title-section"
+          to="/"
+        >
           <img
-            class="title-section__logo"
+            class="footer__links-container__special-box__title-section__logo"
             src="@/assets/images/immo-logo.svg"
             alt="logo martinimmo"
           />
-          <h4 class="title-section__title">Martinimmo</h4>
-        </div>
-        <p class="paragraphs">Vendez votre bien immobilier en 48H.</p>
+          <h4
+            class="footer__links-container__special-box__title-section__title"
+          >
+            Martinimmo
+          </h4>
+        </NuxtLink>
+        <p class="paragraphs">
+          Vendez votre appartement ou maison sans attendre.
+        </p>
       </div>
-      <ul class="links">
-        <h5 class="links__title">Liens utiles</h5>
+      <ul class="footer__links-container__links">
+        <h5 class="footer__links-container__links__title">Liens utiles</h5>
 
-        <li class="links__li">
+        <li class="footer__links-container__links__li">
           <NuxtLink to="/estimation-en-ligne-bien-immobilier"
-            >Vendre mon bien</NuxtLink
+            >Estimation en ligne</NuxtLink
           >
         </li>
-        <li class="links__li">
-          <NuxtLink to="/faq">FAQ</NuxtLink>
-        </li>
-      </ul>
-      <ul class="links">
-        <h5 class="links__title">A propos</h5>
-        <li class="links__li">
-          <NuxtLink to="https://tekilawebfactory.com"
-            >Made By Tekila Web Factory</NuxtLink
+        <li class="footer__links-container__links__li">
+          <NuxtLink to="/estimation-en-ligne-bien-immobilier"
+            >Obtenir un prêt</NuxtLink
           >
         </li>
-        <li class="links__li">508 rue Pichat</li>
-        <li class="links__li">73800, Ste-Hélène-du-Lac</li>
+        <li class="footer__links-container__links__li">
+          <NuxtLink
+            to="/estimation-en-ligne-bien-immobilier"
+            style="text-decoration: underline"
+            >Espace client</NuxtLink
+          >
+        </li>
       </ul>
-    </GridContainer>
+      <ul class="footer__links-container__links">
+        <h5 class="footer__links-container__links__title">Partenaires</h5>
 
-    <div class="bottom-links">
+        <li class="footer__links-container__links__li">
+          <NuxtLink to="/estimation-en-ligne-bien-immobilier">Banques</NuxtLink>
+        </li>
+        <li class="footer__links-container__links__li">
+          <NuxtLink to="/estimation-en-ligne-bien-immobilier"
+            >Notaires</NuxtLink
+          >
+        </li>
+        <li class="footer__links-container__links__li">
+          <NuxtLink to="/estimation-en-ligne-bien-immobilier">Experts</NuxtLink>
+        </li>
+      </ul>
+      <ul class="footer__links-container__links">
+        <h5 class="footer__links-container__links__title">Vos questions</h5>
+
+        <li class="footer__links-container__links__li">
+          <NuxtLink to="/estimation-en-ligne-bien-immobilier">F.A.Q.</NuxtLink>
+        </li>
+        <li class="footer__links-container__links__li">
+          <NuxtLink to="/estimation-en-ligne-bien-immobilier"
+            >Qui sommes nous</NuxtLink
+          >
+        </li>
+        <li class="footer__links-container__links__li">
+          <NuxtLink to="/estimation-en-ligne-bien-immobilier"
+            >Comment ça marche</NuxtLink
+          >
+        </li>
+      </ul>
+      <div class="footer__links-container__special-box">
+        <div class="footer__links-container__special-box__title-section">
+          <h4
+            class="footer__links-container__special-box__title-section__title"
+          >
+            Estimez votre bien
+          </h4>
+        </div>
+        <p class="paragraphs">Estimation 100% en ligne, rapide et gratuite</p>
+        <PrimaryButton variant="accent-color" icon="arrow_right"
+          >Obtenir une offre</PrimaryButton
+        >
+      </div>
+    </div>
+
+    <div class="footer__bottom-links">
       <NuxtLink
         to="https://docs.google.com/document/d/e/2PACX-1vQW80YJ6C8B_FY9LEPW6j4pEz3IfThZ-StWlcqUTakTnIUuAxn7CcheVopddu5dpgjlal_Amibhh2GF/pub"
         target="_blank"
@@ -53,14 +106,14 @@
       <NuxtLink to="tekilawebfactory.com" target="_blank"
         >Mentions légales</NuxtLink
       >
-      <NuxtLink to="https://tekilawebfactory.com"
+      <NuxtLink to="https://tekilawebfactory.com" target="_blank"
         >©Tekila Web Factory 2025</NuxtLink
       >
     </div>
   </footer>
 </template>
 <style lang="scss" scoped>
-footer {
+.footer {
   background-color: $secondary-color;
   padding: 1rem;
   gap: 2rem;
@@ -68,63 +121,70 @@ footer {
   flex-direction: column;
   border-top: 1px solid $accent-color-faded;
 
-  .first-box {
+  &__links-container {
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    color: $text-color-alt;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 1rem;
 
-    .title-section {
+    @media (min-width: $big-tablet-screen) {
+      padding: 2rem;
+      max-width: 2064px;
+    }
+
+    &__special-box {
       display: flex;
-      gap: 0.5rem;
-      height: fit-content;
-      align-items: center;
+      flex-direction: column;
+      gap: 1rem;
+      color: $text-color-alt;
 
-      &__logo {
-        width: 35px;
-        height: 35px;
+      @media (min-width: $tablet-screen) {
+        max-width: 300px;
       }
+
+      &__title-section {
+        display: flex;
+        gap: 0.5rem;
+        height: fit-content;
+        align-items: center;
+
+        &__logo {
+          width: 35px;
+          height: 35px;
+        }
+
+        &__title {
+          color: $text-color-alt;
+          font-size: 1.625rem;
+          font-weight: $semi-bold;
+        }
+      }
+    }
+
+    &__links {
+      display: flex;
+      gap: 1rem;
+      list-style: none;
+      flex-direction: column;
+      margin-top: 0.5rem;
 
       &__title {
         color: $text-color-alt;
-        font-size: 1.625rem;
-        font-weight: $semi-bold;
+        font-size: 1.05rem;
       }
-    }
-  }
 
-  .links {
-    display: flex;
-    gap: 1rem;
-    list-style: none;
-    flex-direction: column;
-    margin-top: 0.5rem;
-
-    &__title {
-      color: $text-color-alt;
-      font-size: 1.05rem;
-    }
-
-    &__li {
-      color: $text-color-alt;
-      a {
+      &__li {
         color: $text-color-alt;
+
+        a {
+          color: $text-color-alt;
+        }
       }
     }
   }
 
-  .buttons {
-    display: flex;
-    gap: 1rem;
-    height: fit-content;
-    flex-direction: column;
-
-    @media (min-width: $big-tablet-screen) {
-      flex-direction: row;
-    }
-  }
-
-  .bottom-links {
+  &__bottom-links {
     display: flex;
     gap: 1rem;
     color: $primary-color-faded;

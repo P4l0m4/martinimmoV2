@@ -17,14 +17,14 @@ const isDesktopScreen = computed(() => {
     /></Transition>
 
     <Container class="headlines">
-      <div class="headlines__logo">
+      <NuxtLink class="headlines__logo" to="/">
         <img
           class="headlines__logo__image"
           src="@/assets/images/immo-logo.svg"
           alt="logo"
         />
         <span class="headlines__logo__company">Martinimmo</span>
-      </div>
+      </NuxtLink>
 
       <div class="headlines__text">
         <h1 class="headlines__text__title">
