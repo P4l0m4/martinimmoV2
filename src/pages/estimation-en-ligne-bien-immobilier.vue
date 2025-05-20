@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { useRuntimeConfig } from "#app";
 import { useAddressStore } from "@/stores/addressStore";
 import { isMobile } from "@/utils/otherFunctions";
@@ -135,6 +135,10 @@ watch(address, async () => {
     await checkDowntown();
   }
 });
+
+onMounted(() => {
+  window.scrollTo(0, 0);
+});
 </script>
 <template>
   <Container>
@@ -220,6 +224,8 @@ watch(address, async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  min-height: calc(100svh - 4rem);
   gap: 2rem;
   height: fit-content;
 
@@ -228,6 +234,7 @@ watch(address, async () => {
     justify-content: center;
     align-items: center;
     gap: 4rem;
+    min-height: initial;
     height: calc(100vh - 4rem);
   }
 
@@ -296,9 +303,14 @@ watch(address, async () => {
     flex-direction: column;
     gap: 2rem;
     align-items: center;
+    text-align: center;
 
     .subtitles {
-      margin-top: -2rem;
+      margin-top: -1rem;
+
+      @media (min-width: $big-tablet-screen) {
+        margin-top: -2rem;
+      }
     }
   }
 }

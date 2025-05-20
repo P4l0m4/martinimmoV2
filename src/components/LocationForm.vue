@@ -3,6 +3,7 @@ import { ref, watch } from "vue";
 import { colors } from "@/utils/colors";
 import { onClickOutside } from "@vueuse/core";
 import { useTemplateRef } from "vue";
+import { isMobile } from "@/utils/otherFunctions";
 import { useAddressStore } from "@/stores/addressStore";
 
 const store = useAddressStore();
@@ -34,6 +35,8 @@ async function fetchSuggestions() {
   suggestions.value = (data.features ?? []).filter(
     (f: any) => f.properties.label !== query.value
   );
+  if (isMobile()) suggestions.value.reverse();
+
   loading.value = false;
   isOpen.value = !!suggestions.value.length;
 }
