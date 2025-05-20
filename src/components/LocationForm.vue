@@ -172,17 +172,18 @@ onClickOutside(target, () => (isOpen.value = false), {});
     color: $text-color;
     width: 100%;
     height: fit-content;
-    bottom: 3.9rem;
+    bottom: 7.9rem;
     left: 0;
     list-style: none;
     background-color: $base-color;
-    border-radius: 0 0 $radius $radius;
+    border-radius: $radius $radius 0 0;
     position: absolute;
     overflow: hidden;
 
     @media (min-width: $big-tablet-screen) {
       flex-direction: column;
       top: 3.9rem;
+      border-radius: 0 0 $radius $radius;
     }
 
     &__suggestion {
