@@ -235,13 +235,14 @@ watch(address, async () => {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    padding: 1.5rem;
+    padding: 1rem;
     background-color: $base-color;
     border-radius: $radius;
     width: 100%;
     max-width: 550px;
 
     @media (min-width: $big-tablet-screen) {
+      padding: 1.5rem;
       gap: 1.5rem;
       height: 100%;
       max-height: 500px;

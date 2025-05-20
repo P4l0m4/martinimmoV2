@@ -396,6 +396,10 @@ async function handleSubmit() {
   padding: 1rem;
   border-radius: $radius;
 
+  @media (min-width: $tablet-screen) {
+    max-width: 550px;
+  }
+
   @media (min-width: $big-tablet-screen) {
     max-width: 350px;
     padding: 1.5rem;

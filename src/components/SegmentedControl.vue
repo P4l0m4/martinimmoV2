@@ -77,13 +77,19 @@ onMounted(() => {
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 1rem;
+    padding: 0.75rem;
     gap: 0.5rem;
     cursor: pointer;
     user-select: none;
     z-index: 1;
     color: $text-color-alt;
     transition: color 0.3s;
+    font-size: 0.85rem;
+
+    @media (min-width: $big-tablet-screen) {
+      padding: 1rem;
+      font-size: 1rem;
+    }
   }
 
   &__input:checked + &__btn {
