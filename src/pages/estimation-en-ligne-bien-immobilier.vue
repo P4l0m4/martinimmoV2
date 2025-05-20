@@ -20,6 +20,8 @@ const equipments = ref<string[]>([]);
 const discalifications = ref<string[]>([]);
 const groundFloor = ref(false);
 
+const mapLoaded = ref(false);
+
 const mapSrc = computed(() => {
   if (!address.value?.latLng) return null;
 
@@ -91,6 +93,7 @@ async function checkDowntown() {
 function clearLocalStorageAndRefresh() {
   store.clearLocalStorage();
   address.value = store.readFromLocalStorage();
+  mapLoaded.value = false;
 }
 
 const postalCode = computed(() => {
@@ -149,11 +152,12 @@ onMounted(() => {
       >
         <img
           class="map"
-          v-if="mapSrc && mapSrc.length > 0"
+          v-if="mapSrc"
           :src="mapSrc"
           alt="Carte de l'adresse sélectionnée"
+          @load="mapLoaded = true"
         />
-        <UICircularLoader v-else :color="colors['accent-color']" />
+        <UICircularLoader v-if="!mapLoaded" :color="colors['accent-color']" />
         <p
           v-if="address"
           class="estimation-en-ligne__map-container__address"
