@@ -193,6 +193,9 @@ onClickOutside(target, () => (isOpen.value = false), {});
 
       & button {
         color: $text-color;
+        width: 100%;
+        height: 100%;
+        text-align: left;
       }
 
       &:hover {
