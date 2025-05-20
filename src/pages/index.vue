@@ -28,7 +28,7 @@ const isDesktopScreen = computed(() => {
 
       <div class="headlines__text">
         <h1 class="headlines__text__title">
-          Vendez votre bien immobillier sans attendre
+          Vendez votre bien immobilier sans attendre
         </h1>
         <h2 class="headlines__text__subtitle">
           Offre instantanée, transaction la plus rapide du marché ⚡

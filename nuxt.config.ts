@@ -5,7 +5,11 @@ export default defineNuxtConfig({
   ssr: true,
   nitro: {
     preset: "netlify",
+    output: {
+      publicDir: "public",
+    },
   },
+
   srcDir: "src/",
   css: ["@/styles/global.scss"],
   modules: ["dayjs-nuxt", "@pinia/nuxt"],
