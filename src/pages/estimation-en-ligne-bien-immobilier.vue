@@ -22,38 +22,45 @@ const groundFloor = ref(false);
 
 const mapSrc = computed(() => {
   if (!address.value?.latLng) return null;
+
   const { lat, lng } = address.value.latLng;
-  const size = isMobile() ? "400x400" : "700x700";
+  const [w, h] = (isMobile() ? "500x500" : "700x700").split("x");
+
+  const color = "%23ff0000"; // rouge
+  const marker =
+    `lonlat:${lng},${lat}` +
+    `;type:material` +
+    `;size:large` +
+    `;color:${color}` +
+    `;icon:home`;
+
   return (
-    "https://maps.googleapis.com/maps/api/staticmap" +
-    `?key=${cfg.public.MAPS_PLACES_API_KEY}` +
-    `&center=${lat},${lng}` +
-    "&zoom=18" +
-    `&size=${size}&scale=2` +
-    `&markers=color:red|${lat},${lng}`
+    "https://maps.geoapify.com/v1/staticmap" +
+    `?style=osm-bright-smooth` +
+    `&width=${w}&height=${h}` +
+    `&center=lonlat:${lng},${lat}` +
+    `&zoom=17` +
+    `&marker=${marker}` +
+    `&scaleFactor=2` +
+    `&apiKey=${cfg.public.STATIC_MAPS_API_KEY}`
   );
 });
 
-async function findCityCenter(): Promise<{ lat: number; lng: number } | null> {
-  if (!address.value) return null;
+async function findCityCenter() {
+  const city = address.value?.components?.city;
+  if (!city) return null;
 
-  const matchCity = address.value.formatted.match(/\b\d{5}\s+([^,]+)/);
-  const cityName = matchCity ? matchCity[1].trim() : "";
+  const res = await fetch(
+    `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(
+      city
+    )}&fields=centre&format=json`
+  );
 
-  if (!cityName) return null;
-
-  const url =
-    "https://maps.googleapis.com/maps/api/geocode/json" +
-    `?address=${encodeURIComponent(cityName + ", France")}` +
-    `&key=${cfg.public.MAPS_PLACES_API_KEY}`;
-
-  const res = await fetch(url);
-  if (!res.ok) return null;
   const data = await res.json();
+  if (!data?.[0]?.centre) return null;
 
-  const loc = data.results?.[0]?.geometry?.location;
-
-  return loc ? { lat: loc.lat, lng: loc.lng } : null;
+  const { coordinates } = data[0].centre;
+  return { lng: coordinates[0], lat: coordinates[1] };
 }
 
 async function checkDowntown() {
@@ -155,6 +162,14 @@ watch(address, async () => {
           v-if="isAdressInDowntown"
           class="estimation-en-ligne__map-container__centre-ville"
         >
+          <IconComponent
+            icon="map_pin_fill"
+            size="1rem"
+            :color="colors['text-color']"
+          />
+          Votre bien est en centre ville
+        </span>
+        <span v-else class="estimation-en-ligne__map-container__centre-ville">
           <IconComponent
             icon="map_pin_fill"
             size="1rem"
@@ -267,7 +282,7 @@ watch(address, async () => {
     .map {
       width: 100%;
       height: 100%;
-      max-height: 400px;
+      max-height: 384px;
       object-fit: cover;
       object-position: center;
       border-radius: 1.5rem;

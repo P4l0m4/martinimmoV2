@@ -2,17 +2,24 @@
 import { colors } from "@/utils/colors";
 interface Props {
   color?: string;
+  size?: string;
 }
 
 withDefaults(defineProps<Props>(), {
   color: colors["base-color"],
+  size: "140px",
 });
 </script>
 <template>
   <div class="ui-loader">
     <span
       class="ui-loader__spinner"
-      :style="{ border: `14px solid ${color}`, borderTopColor: 'transparent' }"
+      :style="{
+        border: `14px solid ${color}`,
+        borderTopColor: 'transparent',
+        width: size,
+        height: size,
+      }"
     ></span>
   </div>
 </template>
@@ -25,8 +32,6 @@ withDefaults(defineProps<Props>(), {
   width: 100%;
 
   &__spinner {
-    width: 140px;
-    height: 140px;
     border-radius: 50%;
     animation: spinner 1.4s linear infinite;
   }

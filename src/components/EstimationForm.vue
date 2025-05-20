@@ -406,12 +406,14 @@ async function handleSubmit() {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 0.5rem;
+    margin-top: -1rem;
   }
 
   &__discalification-checkboxes {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    margin-top: -1rem;
   }
 
   &__previous-step-button {

@@ -31,11 +31,7 @@ onClickOutside(target, () => (isDropdownOpen.value = false), {
       style="margin-left: auto"
       :icon="isDropdownOpen ? 'caret_down_bold' : 'caret_right_bold'" /></span
   ><Transition>
-    <div
-      class="estimation-form__checkboxes"
-      ref="contentEl"
-      v-if="isDropdownOpen"
-    >
+    <div ref="contentEl" v-if="isDropdownOpen">
       <slot /></div
   ></Transition>
 </template>

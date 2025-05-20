@@ -1,86 +1,104 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { Loader } from "@googlemaps/js-api-loader";
+import { ref, watch } from "vue";
+import { colors } from "@/utils/colors";
+import { onClickOutside } from "@vueuse/core";
+import { useTemplateRef } from "vue";
 import { useAddressStore } from "@/stores/addressStore";
 
 const store = useAddressStore();
-const config = useRuntimeConfig();
-
-const root = ref<HTMLElement | null>(null);
-
 const emit = defineEmits(["refresh"]);
 
-onMounted(async () => {
-  const loader = new Loader({
-    apiKey: config.public.MAPS_PLACES_API_KEY,
-    version: "weekly",
-    libraries: ["places"],
-    language: "fr",
-  });
+const target = useTemplateRef<HTMLElement>("target");
 
-  await loader.load();
-  await customElements.whenDefined("gmp-place-autocomplete");
+const query = ref("");
+const suggestions = ref<any[]>([]);
+const isOpen = ref(false);
+const loading = ref(false);
 
-  const { PlaceAutocompleteElement } = await google.maps.importLibrary(
-    "places"
-  );
-
-  if (!PlaceAutocompleteElement || !root.value) return;
-
-  const pac = new PlaceAutocompleteElement({
-    types: ["address"],
-    includedRegionCodes: ["fr"],
-  });
-
-  root.value.appendChild(pac);
-
-  (root.value as HTMLElement).addEventListener(
-    "click",
-    () => {
-      pac.focus();
-    },
-    {
-      passive: true,
-    }
-  );
-
-  pac.addEventListener("gmp-select", async (ev: any) => {
-    const prediction = ev.placePrediction;
-    const place = await prediction.toPlace();
-
-    await place.fetchFields({
-      fields: ["formattedAddress", "addressComponents", "location"],
-    });
-
-    const payload = {
-      formatted: place.formattedAddress,
-      latLng: {
-        lat: place.location?.lat(),
-        lng: place.location?.lng(),
-      },
-      components: place.addressComponents?.toJSON?.(),
-    };
-
-    localStorage.setItem("address", JSON.stringify(payload));
-    store.save(payload);
-  });
+let timer: any;
+watch(query, (q) => {
+  clearTimeout(timer);
+  if (!q) return (suggestions.value = []), (isOpen.value = false);
+  timer = setTimeout(fetchSuggestions, 500);
 });
+
+async function fetchSuggestions() {
+  loading.value = true;
+  const res = await fetch(
+    `https://api-adresse.data.gouv.fr/search?q=${encodeURIComponent(
+      query.value
+    )}&limit=3`
+  );
+  const data = await res.json();
+
+  suggestions.value = (data.features ?? []).filter(
+    (f: any) => f.properties.label !== query.value
+  );
+  loading.value = false;
+  isOpen.value = !!suggestions.value.length;
+}
+
+function select(feature: any) {
+  query.value = feature.properties.label;
+  suggestions.value = [];
+
+  const payload = {
+    formatted: feature.properties.label,
+    latLng: {
+      lat: feature.geometry.coordinates[1],
+      lng: feature.geometry.coordinates[0],
+    },
+    components: feature.properties,
+  };
+  localStorage.setItem("address", JSON.stringify(payload));
+  store.save(payload);
+  isOpen.value = false;
+}
+
+onClickOutside(target, () => (isOpen.value = false), {});
 </script>
 
 <template>
-  <form class="location-form">
-    <div
-      ref="root"
-      class="location-form__input-field"
-      data-placeholder="Adresse du bien"
-    ></div>
+  <form
+    ref="target"
+    class="location-form"
+    @submit.prevent
+    :class="{ open: isOpen }"
+  >
+    <div class="location-form__input-field">
+      <input
+        class="location-form__input-field__input"
+        type="text"
+        placeholder="10 rue de la tranquillité, 75140, Paris..."
+        v-model="query"
+        @focus="isOpen = !!suggestions.length"
+      />
+    </div>
+
     <NuxtLink
       to="/estimation-en-ligne-bien-immobilier"
       @click="emit('refresh')"
       class="button"
-      ><PrimaryButton variant="accent-color"
-        >Obtenir une offre</PrimaryButton
-      ></NuxtLink
+    >
+      <PrimaryButton variant="accent-color">Obtenir une offre</PrimaryButton>
+    </NuxtLink>
+    <Transition>
+      <ul v-if="isOpen" class="autocomplete">
+        <Transition
+          ><UICircularLoader
+            v-if="loading"
+            :color="colors['secondary-color-faded']"
+        /></Transition>
+        <li
+          class="autocomplete__suggestion"
+          v-for="suggestion in suggestions"
+          :key="suggestion.properties.id"
+        >
+          <button @click="select(suggestion)">
+            {{ suggestion.properties.label }}
+          </button>
+        </li>
+      </ul></Transition
     >
   </form>
 </template>
@@ -88,7 +106,7 @@ onMounted(async () => {
 <style lang="scss" scoped>
 .location-form {
   display: flex;
-  background-color: $primary-color;
+  background-color: $base-color;
   border-radius: $radius;
   padding: 1rem 0.25rem 0.25rem 0.25rem;
   width: 100%;
@@ -96,6 +114,8 @@ onMounted(async () => {
   flex-direction: column;
   justify-content: space-between;
   gap: 0.5rem;
+  position: relative;
+  transition: border-radius 0.2s linear;
 
   @media (min-width: $big-tablet-screen) {
     padding: 0.25rem;
@@ -108,8 +128,6 @@ onMounted(async () => {
   &__input-field {
     width: 100%;
     max-width: 100%;
-    padding: 0 0.75rem;
-    position: relative;
 
     @media (min-width: $big-tablet-screen) {
       width: 300px;
@@ -121,16 +139,21 @@ onMounted(async () => {
       max-width: 350px;
     }
 
-    &::after {
-      content: "";
-      position: absolute;
-      top: 0rem;
-      left: 0.75rem;
-      z-index: 1000003; // forgive me, Google gives me no choice
-      width: calc(100% - 1.5rem);
-      height: 38px;
-      pointer-events: none;
-      border: $primary-color solid 6px;
+    &__input {
+      display: inline-block;
+      text-overflow: ellipsis;
+      height: 100%;
+      width: 100%;
+      color: $text-color;
+      font-family: "Figtree", sans-serif;
+      font-size: 1rem;
+      padding: 1rem;
+      caret-color: $text-color;
+      border: 2px solid $base-color;
+
+      &::placeholder {
+        color: $text-color-faded;
+      }
     }
   }
 
@@ -140,6 +163,49 @@ onMounted(async () => {
 
     @media (min-width: $big-tablet-screen) {
       width: fit-content;
+    }
+  }
+
+  .autocomplete {
+    display: flex;
+    flex-direction: column;
+    color: $text-color;
+    width: 100%;
+    height: fit-content;
+    bottom: 3.9rem;
+    left: 0;
+    list-style: none;
+    background-color: $base-color;
+    border-radius: 0 0 $radius $radius;
+    position: absolute;
+    overflow: hidden;
+
+    @media (min-width: $big-tablet-screen) {
+      flex-direction: column;
+      top: 3.9rem;
+    }
+
+    &__suggestion {
+      padding: 1rem;
+      height: fit-content;
+      transition: background-color 0.2s linear;
+
+      & button {
+        color: $text-color;
+      }
+
+      &:hover {
+        background-color: $accent-color-faded;
+        cursor: pointer;
+      }
+    }
+  }
+
+  &.open {
+    border-radius: 0 0 $radius $radius;
+
+    @media (min-width: $big-tablet-screen) {
+      border-radius: $radius $radius 0 0;
     }
   }
 }
