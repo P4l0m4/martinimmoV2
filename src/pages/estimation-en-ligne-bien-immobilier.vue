@@ -157,7 +157,9 @@ onMounted(() => {
           alt="Carte de l'adresse sélectionnée"
           @load="mapLoaded = true"
         />
-        <UICircularLoader v-if="!mapLoaded" :color="colors['accent-color']" />
+        <div class="map__loader" v-if="!mapLoaded">
+          <UICircularLoader :color="colors['accent-color']" />
+        </div>
         <p
           v-if="address"
           class="estimation-en-ligne__map-container__address"
@@ -299,6 +301,14 @@ onMounted(() => {
       object-fit: cover;
       object-position: center;
       border-radius: 1.5rem;
+
+      &__loader {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
     }
   }
 
