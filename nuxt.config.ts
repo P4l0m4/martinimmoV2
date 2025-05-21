@@ -7,7 +7,12 @@ export default defineNuxtConfig({
   ssr: true,
   nitro: {
     preset: "netlify",
-    publicAssets: [{ dir: ".nuxt/dist/client", baseURL: "/_nuxt" }],
+    publicAssets: [
+      {
+        dir: ".nuxt/dist/client/_nuxt",
+        baseURL: "/_nuxt/",
+      },
+    ],
   },
 
   srcDir: "src/",
