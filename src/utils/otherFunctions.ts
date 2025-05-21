@@ -1,3 +1,8 @@
+import { useMediaQuery } from "@vueuse/core";
+
+export const isDesktop = () => useMediaQuery("(min-width: 1024px)");
+export const isMobile = () => useMediaQuery("(max-width: 1023px)");
+
 export function copyToClipboard(text: string): void {
   navigator.clipboard.writeText(text);
 }
@@ -9,18 +14,6 @@ export function share(text: string): void {
       text,
     });
   }
-}
-
-export function isDesktop() {
-  return window.innerWidth > 1024;
-}
-
-export function isTablet() {
-  return window.innerWidth < 1024 && window.innerWidth > 768;
-}
-
-export function isMobile() {
-  return window.innerWidth < 768;
 }
 
 export function formattedValue(value: number) {
