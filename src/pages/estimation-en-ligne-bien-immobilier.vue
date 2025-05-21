@@ -26,7 +26,7 @@ const mapSrc = computed(() => {
   if (!address.value?.latLng) return null;
 
   const { lat, lng } = address.value.latLng;
-  const [w, h] = (isMobile() ? "500x500" : "700x700").split("x");
+  const [w, h] = (isMobile() ? "500x500" : "600x600").split("x");
 
   const color = "%23ff0000"; // rouge
   const marker =
@@ -184,9 +184,9 @@ onMounted(() => {
           <IconComponent
             icon="map_pin_fill"
             size="1rem"
-            :color="colors['text-color']"
+            :color="colors['primary-color']"
           />
-          Votre bien est en centre ville
+          Votre bien à proximité du centre ville
         </span>
       </div>
 
@@ -249,7 +249,8 @@ onMounted(() => {
     flex-direction: column;
     gap: 1rem;
     padding: 1rem;
-    background-color: $base-color;
+    background-color: $accent-color-faded;
+    border: 1px solid $accent-color-faded;
     border-radius: $radius;
     width: 100%;
     max-width: 550px;
@@ -260,13 +261,13 @@ onMounted(() => {
       padding: 1.5rem;
       gap: 1.5rem;
       height: 100%;
-      max-height: 500px;
+      max-height: 440px;
     }
 
     &__address {
       font-size: 1rem;
       font-weight: $semi-bold;
-      color: $text-color;
+      color: $text-color-alt;
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -292,14 +293,14 @@ onMounted(() => {
       align-items: center;
       font-size: 1rem;
       gap: 0.5rem;
-      color: $text-color;
+      color: $text-color-alt;
       margin-top: -0.75rem;
     }
 
     .map {
       width: 100%;
       height: 100%;
-      max-height: 384px;
+      max-height: 320px;
       object-fit: cover;
       object-position: center;
       border-radius: 1.5rem;

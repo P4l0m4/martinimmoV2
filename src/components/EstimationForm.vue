@@ -395,6 +395,7 @@ async function handleSubmit() {
   background-color: $accent-color-faded;
   padding: 1rem;
   border-radius: $radius;
+  border: 1px solid $accent-color-faded;
 
   @media (min-width: $tablet-screen) {
     max-width: 550px;
