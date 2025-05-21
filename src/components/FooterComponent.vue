@@ -105,7 +105,7 @@
         target="_blank"
         >RGPD</NuxtLink
       >
-      <NuxtLink to="tekilawebfactory.com" target="_blank"
+      <NuxtLink to="https://tekilawebfactory.com" target="_blank"
         >Mentions légales</NuxtLink
       >
       <NuxtLink to="https://tekilawebfactory.com" target="_blank"

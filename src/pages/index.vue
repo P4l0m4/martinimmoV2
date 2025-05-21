@@ -1,11 +1,3 @@
-<script lang="ts" setup>
-import { computed } from "vue";
-import { isDesktop } from "@/utils/otherFunctions";
-
-const isDesktopScreen = computed(() => {
-  return isDesktop();
-});
-</script>
 <template>
   <div class="background">
     <Transition>
@@ -35,63 +27,81 @@ const isDesktopScreen = computed(() => {
         </h2>
       </div>
       <LocationForm />
-      <UISteps v-if="isDesktopScreen" />
+      <UISteps />
     </Container>
   </div>
-  <Container class="steps-wrapper" v-if="!isDesktopScreen">
-    <UISteps />
-  </Container>
 </template>
 <style lang="scss" scoped>
 .background {
   background-color: $secondary-color;
   width: 100vw;
-  min-height: 100vh;
   position: relative;
   z-index: 0;
-  overflow: hidden;
 
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-image: linear-gradient(
-      180deg,
-      $secondary-color,
-      transparent 30%
-    );
-    z-index: 1;
-    width: 100%;
-    height: 100px;
-  }
+  @media (min-width: $big-tablet-screen) {
+    min-height: 100vh;
+    overflow: hidden;
 
-  &::after {
-    content: "";
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    background-image: linear-gradient(transparent 50%, $secondary-color);
-    z-index: 1;
-    width: 100%;
-    height: 300px;
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-image: linear-gradient(
+        180deg,
+        $secondary-color,
+        transparent 30%
+      );
+      z-index: 1;
+      width: 100%;
+      height: 100px;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      background-image: linear-gradient(transparent 50%, $secondary-color);
+      z-index: 1;
+      width: 100%;
+      height: 300px;
+    }
   }
 
   .blob {
+    display: block;
     position: absolute;
     width: 40%;
     height: auto;
     object-fit: contain;
 
     &:nth-of-type(1) {
-      top: -35%;
-      left: -10%;
+      top: -6%;
+      left: -6%;
       transform: rotate(200deg);
     }
     &:nth-of-type(3) {
-      bottom: -40%;
-      right: -5%;
+      top: 1rem;
+      bottom: 0;
+      right: -6%;
+      margin: auto;
       transform: rotate(215deg);
+    }
+
+    @media (min-width: $big-tablet-screen) {
+      &:nth-of-type(1) {
+        top: -40%;
+        left: -10%;
+        transform: rotate(200deg);
+      }
+      &:nth-of-type(3) {
+        top: initial;
+        bottom: -40%;
+        right: -5%;
+        transform: rotate(220deg);
+        margin: initial;
+      }
     }
   }
 
@@ -119,12 +129,12 @@ const isDesktopScreen = computed(() => {
   align-items: center;
   justify-content: center;
   gap: 2rem;
-  position: absolute;
   height: 100%;
   z-index: 2;
   padding: 2rem 1rem;
 
   @media (min-width: $big-tablet-screen) {
+    position: absolute;
     padding: 4rem 1rem;
     justify-content: space-between;
     gap: 1rem;
