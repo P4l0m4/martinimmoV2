@@ -1,3 +1,5 @@
+import { resolve } from "pathe";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
@@ -5,9 +7,7 @@ export default defineNuxtConfig({
   ssr: true,
   nitro: {
     preset: "netlify",
-    output: {
-      publicDir: "public",
-    },
+    publicAssets: [{ dir: ".nuxt/dist/client/_nuxt", baseURL: "/_nuxt" }],
   },
 
   srcDir: "src/",
