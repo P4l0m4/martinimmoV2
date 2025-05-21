@@ -29,7 +29,6 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      MAPS_PLACES_API_KEY: process.env.MAPS_PLACES_API_KEY,
       STATIC_MAPS_API_KEY: process.env.STATIC_MAPS_API_KEY,
     },
   },
