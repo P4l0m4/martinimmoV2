@@ -3,7 +3,7 @@
     <nav class="header__nav">
       <ul class="header__nav__ul">
         <li class="header__nav__ul__li">
-          <NuxtLink to="/" exact>Accueil</NuxtLink>
+          <NuxtLink to="/" exact-active>Accueil</NuxtLink>
         </li>
         <li class="header__nav__ul__li">
           <NuxtLink to="/estimation-en-ligne-bien-immobilier" exact

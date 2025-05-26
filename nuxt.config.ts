@@ -27,6 +27,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       STATIC_MAPS_API_KEY: process.env.STATIC_MAPS_API_KEY,
+      NUXT_PUBLIC_SUPABASE_URL: process.env.NUXT_PUBLIC_SUPABASE_URL,
+      NUXT_PUBLIC_SUPABASE_KEY: process.env.NUXT_PUBLIC_SUPABASE_KEY,
     },
   },
   dayjs: {

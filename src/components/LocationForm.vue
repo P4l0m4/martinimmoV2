@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, nextTick } from "vue";
 import { useRouter } from "#app";
-import { onClickOutside, set, useDebounceFn } from "@vueuse/core";
+import { onClickOutside, useDebounceFn } from "@vueuse/core";
 import { useTemplateRef } from "vue";
 import { isMobile } from "@/utils/otherFunctions";
 import { useAddressStore } from "@/stores/addressStore";
+// import { insertAddressInDB } from "@/utils/supabaseFunctions";
 
 const emit = defineEmits(["refresh"]);
 
@@ -47,7 +48,7 @@ const debouncedFetch = useDebounceFn(fetchSuggestions, 300);
 function select(feature: any) {
   query.value = feature.properties.label;
   suggestions.value = [];
-
+  // insertAddressInDB(feature);
   const payload = {
     formatted: feature.properties.label,
     latLng: {
@@ -58,6 +59,7 @@ function select(feature: any) {
   };
   localStorage.setItem("address", JSON.stringify(payload));
   store.save(payload);
+
   isOpen.value = false;
   nextTick(() => {
     addressSelected.value = true;
