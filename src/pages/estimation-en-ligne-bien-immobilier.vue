@@ -11,7 +11,7 @@ const address = ref(store.readFromLocalStorage());
 
 const surface = ref();
 const surfaceHabitable = ref();
-const pieces = ref();
+const rooms = ref();
 const typeLocal = ref();
 const expectedRenovationDiscount = ref(0);
 const DPE = ref();
@@ -113,7 +113,7 @@ const showForm = computed(() => {
 function dataFromEstimationForm(data: {
   surface: number;
   surfaceHabitable: number;
-  pieces: number;
+  rooms: number;
   expectedRenovationDiscount: number;
   typeLocal: string;
   DPE: string;
@@ -123,7 +123,7 @@ function dataFromEstimationForm(data: {
 }) {
   surface.value = data.surface;
   surfaceHabitable.value = data.surface;
-  pieces.value = data.pieces;
+  rooms.value = data.rooms;
   typeLocal.value = data.typeLocal;
   expectedRenovationDiscount.value = data.expectedRenovationDiscount;
   DPE.value = data.DPE;
@@ -164,6 +164,9 @@ onMounted(() => {
           v-if="address"
           class="estimation-en-ligne__map-container__address"
           @click="clearLocalStorageAndRefresh"
+          tabindex="0"
+          aria-label="Cliquez pour changer l'adresse"
+          role="button"
         >
           {{ address.formatted }}
 
@@ -176,7 +179,7 @@ onMounted(() => {
           <IconComponent
             icon="map_pin_fill"
             size="1rem"
-            :color="colors['text-color']"
+            :color="colors['primary-color']"
           />
           Votre bien est en centre ville
         </span>
@@ -186,7 +189,7 @@ onMounted(() => {
             size="1rem"
             :color="colors['primary-color']"
           />
-          Votre bien à proximité du centre ville
+          Votre bien est à proximité du centre ville
         </span>
       </div>
 
@@ -213,7 +216,7 @@ onMounted(() => {
           :typeLocal="typeLocal"
           :surface="surface"
           :surfaceHabitable="surfaceHabitable"
-          :pieces="pieces"
+          :rooms="rooms"
           :expectedRenovationDiscount="expectedRenovationDiscount"
           :DPE="DPE"
           :equipments="equipments"
@@ -240,6 +243,7 @@ onMounted(() => {
     justify-content: center;
     align-items: center;
     gap: 4rem;
+    padding: 4rem 0;
     min-height: initial;
     height: calc(100vh - 4rem);
   }
@@ -261,7 +265,7 @@ onMounted(() => {
       padding: 1.5rem;
       gap: 1.5rem;
       height: 100%;
-      max-height: 440px;
+      max-height: 700px;
     }
 
     &__address {
@@ -300,7 +304,7 @@ onMounted(() => {
     .map {
       width: 100%;
       height: 100%;
-      max-height: 320px;
+      max-height: 380px;
       object-fit: cover;
       object-position: center;
       border-radius: 1.5rem;

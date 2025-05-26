@@ -4,7 +4,7 @@ export const colors = {
   "secondary-color": "#00065c",
   "accent-color": "#4885DE",
   "text-color": "#232323",
-  "error-color": "#FF0101",
+  "error-color": "#CB0000",
   "base-color-faded": "#f7f7f750",
   "secondary-color-faded": "#00065c50",
   "primary-color-faded": "#FFFDFA50",

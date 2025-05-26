@@ -33,11 +33,11 @@ withDefaults(defineProps<Props>(), {
 
   &__spinner {
     border-radius: 50%;
-    animation: spinner 1.4s linear infinite;
+    animation: spin 1.4s linear infinite;
   }
 }
 
-@keyframes spinner {
+@keyframes spin {
   to {
     transform: rotate(360deg);
   }

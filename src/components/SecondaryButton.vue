@@ -10,7 +10,8 @@ interface Props {
     | "text-color"
     | "primary-color"
     | "transparent-dark"
-    | "transparent-light";
+    | "transparent-light"
+    | "error-color";
   direction?: "row" | "row-reverse" | "column" | "column-reverse";
   icon?: string;
   iconSize?: string;
@@ -41,6 +42,8 @@ const iconColor = computed(() => {
       return colors["transparent-light"];
     case "transparent-dark":
       return colors["transparent-dark"];
+    case "error-color":
+      return colors["primary-color"];
     default:
       return colors["base-color-faded"];
   }
@@ -111,5 +114,10 @@ const iconColor = computed(() => {
 .primary-color {
   color: $text-color;
   border: 2px solid $primary-color;
+}
+
+.error-color {
+  color: $error-color;
+  border: 2px solid $error-color;
 }
 </style>

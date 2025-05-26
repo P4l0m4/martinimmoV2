@@ -11,7 +11,14 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-  <span class="icon" :style="{ color, fontSize: size }">{{ icon }}</span>
+  <Transition>
+    <span
+      class="icon"
+      :class="{ spin: icon === 'circle_notch' || icon === 'circle_notch_bold' }"
+      :style="{ color, fontSize: size }"
+      >{{ icon }}</span
+    ></Transition
+  >
 </template>
 
 <style scoped>
@@ -51,5 +58,15 @@ withDefaults(defineProps<Props>(), {
   -moz-transition: color 0.2s linear, font-size 0.2s linear;
   -o-transition: color 0.2s linear, font-size 0.2s linear;
   -ms-transition: color 0.2s linear, font-size 0.2s linear;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

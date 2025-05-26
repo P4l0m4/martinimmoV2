@@ -19,24 +19,19 @@ defineProps({
     type: String,
     required: false,
   },
-  split: {
-    type: Boolean,
-    default: false,
-    required: false,
-  },
 });
 
 onClickOutside(target, () => {
-  isDropdownOpen.value = false;
+  isSelectOpen.value = false;
 });
 
 const emit = defineEmits(["optionSelected"]);
 
 const optionSelected = ref("");
-const isDropdownOpen = ref(false);
+const isSelectOpen = ref(false);
 
 const toggleDropdown = () => {
-  isDropdownOpen.value = !isDropdownOpen.value;
+  isSelectOpen.value = !isSelectOpen.value;
 };
 
 const model = defineModel<string>({
@@ -55,15 +50,20 @@ function selectOption(option: string) {
     optionSelected.value = option;
     select(option);
   }
-  isDropdownOpen.value = false;
+  isSelectOpen.value = false;
 }
 </script>
 <template>
-  <div class="dropdown" ref="target">
+  <div class="select-field" ref="target">
     <span
-      class="dropdown__selected"
+      class="select-field__selected"
       @click="toggleDropdown"
-      :class="{ shake: error, 'dropdown__selected--open': isDropdownOpen }"
+      @keydown.enter="toggleDropdown"
+      @keydown.space="toggleDropdown"
+      :class="{ shake: error, 'select-field__selected--open': isSelectOpen }"
+      tabindex="0"
+      role="button"
+      :aria-label="defaultLabel"
     >
       <IconComponent
         v-if="icon"
@@ -74,20 +74,20 @@ function selectOption(option: string) {
       {{ optionSelected.length > 0 ? optionSelected : defaultLabel }}
       <span style="margin-left: auto">
         <IconComponent
-          :icon="isDropdownOpen ? 'caret_up_bold' : 'caret_down_bold'"
+          :icon="isSelectOpen ? 'caret_up_bold' : 'caret_down_bold'"
           size="1.25rem"
           :color="colors['primary-color']" /></span
     ></span>
-    <div
-      class="dropdown__content"
-      :class="{ 'dropdown__content--split': split }"
-      v-if="isDropdownOpen"
-    >
+    <div class="select-field__content" v-if="isSelectOpen">
       <span
-        class="dropdown__content__option"
+        class="select-field__content__option"
         v-for="option in options"
         :key="option"
         @click="selectOption(option)"
+        @keydown.enter="selectOption(option)"
+        @keydown.space="selectOption(option)"
+        tabindex="0"
+        :aria-label="defaultLabel"
         :style="{
           backgroundColor:
             optionSelected === option
@@ -100,7 +100,7 @@ function selectOption(option: string) {
   </div>
 </template>
 <style lang="scss" scoped>
-.dropdown {
+.select-field {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -142,13 +142,6 @@ function selectOption(option: string) {
     @media (min-width: $big-tablet-screen) {
       max-height: 200px;
       top: -216px;
-    }
-
-    &--split {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      overflow: hidden;
-      top: -146px;
     }
 
     &__option {

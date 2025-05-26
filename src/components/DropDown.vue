@@ -22,18 +22,27 @@ onClickOutside(target, () => (isDropdownOpen.value = false), {
 });
 </script>
 <template>
-  <span class="dropdown" ref="target" @click="isDropdownOpen = !isDropdownOpen">
+  <span
+    class="dropdown"
+    ref="target"
+    @click="isDropdownOpen = !isDropdownOpen"
+    @keydown.enter.prevent="isDropdownOpen = !isDropdownOpen"
+    @keydown.space.prevent="isDropdownOpen = !isDropdownOpen"
+    tabindex="0"
+    role="button"
+    :aria-label="label"
+  >
     <IconComponent v-if="icon" :icon :color="colors['primary-color']" />{{
       label
     }}
     <template v-if="number">({{ number }})</template
     ><IconComponent
       style="margin-left: auto"
-      :icon="isDropdownOpen ? 'caret_down_bold' : 'caret_right_bold'" /></span
-  ><Transition>
-    <div ref="contentEl" v-if="isDropdownOpen">
-      <slot /></div
-  ></Transition>
+      :icon="isDropdownOpen ? 'caret_down_bold' : 'caret_right_bold'"
+  /></span>
+  <div ref="contentEl" v-if="isDropdownOpen">
+    <slot />
+  </div>
 </template>
 <style lang="scss" scoped>
 .dropdown {

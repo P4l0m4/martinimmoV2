@@ -20,13 +20,20 @@
         <p class="paragraphs">
           Vendez votre appartement ou maison sans attendre.
         </p>
+
+        <NuxtLink
+          class="footer__links-container__special-box__link"
+          to="/estimation-en-ligne-bien-immobilier"
+          >Voir nos dernières acquisitions</NuxtLink
+        >
       </div>
       <ul class="footer__links-container__links">
         <h5 class="footer__links-container__links__title">Liens utiles</h5>
-
         <li class="footer__links-container__links__li">
-          <NuxtLink to="/estimation-en-ligne-bien-immobilier"
-            >Estimation en ligne</NuxtLink
+          <NuxtLink
+            to="/estimation-en-ligne-bien-immobilier"
+            style="text-decoration: underline"
+            >Espace client</NuxtLink
           >
         </li>
         <li class="footer__links-container__links__li">
@@ -35,18 +42,20 @@
           >
         </li>
         <li class="footer__links-container__links__li">
-          <NuxtLink
-            to="/estimation-en-ligne-bien-immobilier"
-            style="text-decoration: underline"
-            >Espace client</NuxtLink
+          <NuxtLink to="/estimation-en-ligne-bien-immobilier"
+            >Estimation en ligne</NuxtLink
+          >
+        </li>
+        <li class="footer__links-container__links__li">
+          <NuxtLink to="/estimation-en-ligne-bien-immobilier"
+            >Leasing immobilier</NuxtLink
           >
         </li>
       </ul>
       <ul class="footer__links-container__links">
         <h5 class="footer__links-container__links__title">Partenaires</h5>
-
         <li class="footer__links-container__links__li">
-          <NuxtLink to="/estimation-en-ligne-bien-immobilier">Banques</NuxtLink>
+          <NuxtLink to="/estimation-en-ligne-bien-immobilier">Experts</NuxtLink>
         </li>
         <li class="footer__links-container__links__li">
           <NuxtLink to="/estimation-en-ligne-bien-immobilier"
@@ -54,7 +63,12 @@
           >
         </li>
         <li class="footer__links-container__links__li">
-          <NuxtLink to="/estimation-en-ligne-bien-immobilier">Experts</NuxtLink>
+          <NuxtLink to="/estimation-en-ligne-bien-immobilier">Banques</NuxtLink>
+        </li>
+        <li class="footer__links-container__links__li">
+          <NuxtLink to="/estimation-en-ligne-bien-immobilier"
+            >Apport d'affaires</NuxtLink
+          >
         </li>
       </ul>
       <ul class="footer__links-container__links">
@@ -65,12 +79,12 @@
         </li>
         <li class="footer__links-container__links__li">
           <NuxtLink to="/estimation-en-ligne-bien-immobilier"
-            >Qui sommes nous</NuxtLink
+            >Qui sommes nous ?</NuxtLink
           >
         </li>
         <li class="footer__links-container__links__li">
           <NuxtLink to="/estimation-en-ligne-bien-immobilier"
-            >Comment ça marche</NuxtLink
+            >Comment ça marche ?</NuxtLink
           >
         </li>
       </ul>
@@ -162,6 +176,11 @@
           font-weight: $semi-bold;
         }
       }
+
+      &__link {
+        text-decoration: underline;
+        color: $text-color-alt;
+      }
     }
 
     &__links {
@@ -189,11 +208,9 @@
   &__bottom-links {
     display: flex;
     gap: 1rem;
-    color: $primary-color-faded;
+    color: $accent-color;
     font-size: $small-text;
-    border-top: 1px solid $primary-color-faded;
     width: 100%;
-    padding-top: 2rem;
     flex-wrap: wrap;
 
     @media (min-width: $big-tablet-screen) {
@@ -203,7 +220,7 @@
     }
 
     & a {
-      color: $primary-color-faded;
+      color: $accent-color;
       white-space: nowrap;
     }
   }

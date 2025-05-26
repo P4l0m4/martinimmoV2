@@ -8,14 +8,13 @@ import {
   maxValue,
   numeric,
 } from "@vuelidate/validators";
-import SegmentedControl from "./SegmentedControl.vue";
 
 const emit = defineEmits<{
   submit: [
     {
       surface: number | undefined;
       surfaceHabitable: number | undefined;
-      pieces: number | undefined;
+      rooms: number | undefined;
       expectedRenovationDiscount: number;
       typeLocal: string | undefined;
       DPE?: string | undefined;
@@ -82,7 +81,7 @@ const discalificationCheckboxOptions = [
 const form = reactive({
   surface: undefined as number | undefined,
   surfaceHabitable: undefined as number | undefined,
-  pieces: undefined as number | undefined,
+  rooms: undefined as number | undefined,
   expectedRenovationDiscount: undefined as number | undefined,
   typeLocal: undefined as string | undefined,
   DPE: undefined as string | undefined,
@@ -106,7 +105,7 @@ const rules = {
     minValue: minValue(10),
     maxValue: maxValue(600),
   },
-  pieces: { required, integer, minValue: minValue(1), maxValue: maxValue(12) },
+  rooms: { required, integer, minValue: minValue(1), maxValue: maxValue(12) },
   expectedRenovationDiscount: {
     numeric,
     minValue: minValue(0),
@@ -118,9 +117,7 @@ const rules = {
 };
 
 const v$ = useVuelidate(rules, form);
-const isValid = computed(() => !v$.value.$error);
 
-/* ------------------ tableaux d’erreurs custom --------------------- */
 const surfaceErrors = computed(() => {
   const e: string[] = [];
   if (!v$.value.surface.$dirty) return e;
@@ -146,14 +143,14 @@ const surfaceHabitableErrors = computed(() => {
   return e;
 });
 
-const piecesErrors = computed(() => {
+const roomsErrors = computed(() => {
   const e: string[] = [];
-  if (!v$.value.pieces.$dirty) return e;
-  if (v$.value.pieces.required.$invalid) e.push("Indiquez le nombre de pièces");
-  if (v$.value.pieces.integer.$invalid)
+  if (!v$.value.rooms.$dirty) return e;
+  if (v$.value.rooms.required.$invalid) e.push("Indiquez le nombre de pièces");
+  if (v$.value.rooms.integer.$invalid)
     e.push("Le nombre de pièces doit être un nombre entier");
-  if (v$.value.pieces.minValue.$invalid) e.push("Au moins 1 pièce");
-  if (v$.value.pieces.maxValue.$invalid) e.push("Maximum 12 pièces");
+  if (v$.value.rooms.minValue.$invalid) e.push("Au moins 1 pièce");
+  if (v$.value.rooms.maxValue.$invalid) e.push("Maximum 12 pièces");
   return e;
 });
 
@@ -228,7 +225,7 @@ async function handleSubmit() {
     surfaceHabitable: form.surfaceHabitable
       ? Number(form.surfaceHabitable)
       : undefined,
-    pieces: form.pieces ? Number(form.pieces) : undefined,
+    rooms: form.rooms ? Number(form.rooms) : undefined,
     expectedRenovationDiscount: form.expectedRenovationDiscount,
     typeLocal: form.typeLocal,
     DPE: form.DPE,
@@ -301,6 +298,9 @@ async function handleSubmit() {
       variant="primary-color"
       icon="arrow_right"
       @click="checkStep0Validation"
+      @keydown.enter.prevent="checkStep0Validation"
+      @keydown.space.prevent="checkStep0Validation"
+      style="margin-top: auto"
     >
       Étape suivante
     </PrimaryButton>
@@ -342,13 +342,13 @@ async function handleSubmit() {
     />
 
     <InputField
-      id="pieces"
+      id="rooms"
       name="pieces"
       label="Pièces"
       placeholder="Nombre de pièces"
       type="number"
-      v-model="form.pieces"
-      :error="piecesErrors[0]"
+      v-model="form.rooms"
+      :error="roomsErrors[0]"
       icon="door_open_fill"
     />
 
@@ -361,26 +361,33 @@ async function handleSubmit() {
       :options="['A', 'B', 'C', 'D', 'E', 'F', 'G']"
       defaultLabel="DPE"
       icon="thermometer_simple_bold"
-      :split="true"
     />
 
     <PrimaryButton
       variant="primary-color"
       @click="handleSubmit"
+      @keydown.enter.prevent="handleSubmit"
+      @keydown.space.prevent="handleSubmit"
       icon="calculator"
+      style="margin-top: auto"
     >
       Lancer l'estimation
     </PrimaryButton>
-    <button class="estimation-form__previous-step-button" @click="step = 0">
+    <button
+      class="estimation-form__previous-step-button"
+      @click="step = 0"
+      @keydown.enter.prevent="step = 0"
+      @keydown.space.prevent="step = 0"
+    >
       Revenir à l'étape précédente
     </button>
 
     <div
       class="errors"
-      v-if="surfaceErrors[0] || piecesErrors[0] || DPEErrors[0]"
+      v-if="surfaceErrors[0] || roomsErrors[0] || DPEErrors[0]"
     >
       <span v-for="e in surfaceErrors" :key="e">{{ e }}</span>
-      <span v-for="e in piecesErrors" :key="e">{{ e }}</span>
+      <span v-for="e in roomsErrors" :key="e">{{ e }}</span>
       <span v-for="e in DPEErrors" :key="e">{{ e }}</span>
     </div>
   </form>
@@ -405,6 +412,7 @@ async function handleSubmit() {
     max-width: 350px;
     padding: 1.5rem;
     gap: 1.5rem;
+    min-height: 100%;
   }
 
   &__checkboxes {

@@ -7,6 +7,10 @@ interface Props {
 
 defineProps<Props>();
 
+function toggle() {
+  model.value = !model.value;
+}
+
 const model = defineModel<boolean>({
   type: Boolean,
   default: false,
@@ -22,7 +26,13 @@ const model = defineModel<boolean>({
       v-model="model"
       class="checkbox__input"
     />
-    <span class="checkbox__custom" />
+    <span
+      class="checkbox__custom"
+      tabindex="0"
+      :aria-label="label"
+      @keydown.enter.prevent="toggle"
+      @keydown.space.prevent="toggle"
+    />
     <span class="checkbox__label">{{ label }}</span>
   </label>
 </template>

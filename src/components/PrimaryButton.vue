@@ -10,7 +10,8 @@ interface Props {
     | "text-color"
     | "primary-color"
     | "transparent-dark"
-    | "transparent-light";
+    | "transparent-light"
+    | "error-color";
   direction?: "row" | "row-reverse" | "column" | "column-reverse";
   icon?: string;
   iconSize?: string;
@@ -41,6 +42,8 @@ const iconColor = computed(() => {
       return colors["transparent-light"];
     case "transparent-dark":
       return colors["transparent-dark"];
+    case "error-color":
+      return colors["primary-color"];
     default:
       return colors["base-color-faded"];
   }
@@ -77,6 +80,8 @@ const iconColor = computed(() => {
   align-items: center;
   border-radius: $radius;
   font-weight: $regular;
+  transition: background-color 0.3s linear, color 0.3s linear,
+    border-color 0.3s linear;
 }
 
 .icon-wrapper {
@@ -127,6 +132,12 @@ const iconColor = computed(() => {
   background-color: $primary-color;
   color: $accent-color;
   border: 2px solid $primary-color;
+}
+
+.error-color {
+  background-color: $error-color;
+  color: $primary-color;
+  border: 2px solid $error-color;
 }
 
 //hover animation that will make buttons shiny

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed, onMounted, nextTick } from "vue";
 
 interface Option {
   label: string;
@@ -13,10 +13,6 @@ const props = defineProps<{
 const model = defineModel<string>({
   type: String,
 });
-
-function select(label: string) {
-  model.value = label;
-}
 
 const selectedIndex = computed(() =>
   props.options.findIndex((o) => o.label === model.value)
@@ -32,6 +28,16 @@ onMounted(() => {
     model.value = props.options[0].label;
   }
 });
+
+function select(label: string) {
+  model.value = label;
+  nextTick(() => {
+    const active = document.querySelector<HTMLInputElement>(
+      `input[value="${label}"]`
+    );
+    active?.focus();
+  });
+}
 </script>
 
 <template>
@@ -44,7 +50,15 @@ onMounted(() => {
         :value="opt.label"
         v-model="model"
       />
-      <label class="segmented-control__btn" :for="`seg-${i}`">
+      <label
+        class="segmented-control__btn"
+        :for="`seg-${i}`"
+        tabindex="0"
+        :aria-label="opt.label"
+        role="button"
+        @keydown.enter.prevent="select(opt.label)"
+        @keydown.space.prevent="select(opt.label)"
+      >
         <IconComponent
           v-if="opt.icon"
           :icon="opt.icon"

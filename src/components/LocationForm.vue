@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import { colors } from "@/utils/colors";
-import { onClickOutside } from "@vueuse/core";
+import { ref, watch, onMounted, nextTick } from "vue";
+import { useRouter } from "#app";
+import { onClickOutside, set, useDebounceFn } from "@vueuse/core";
 import { useTemplateRef } from "vue";
 import { isMobile } from "@/utils/otherFunctions";
 import { useAddressStore } from "@/stores/addressStore";
 
-const store = useAddressStore();
 const emit = defineEmits(["refresh"]);
+
+const store = useAddressStore();
+const router = useRouter();
 
 const target = useTemplateRef<HTMLElement>("target");
 
@@ -15,13 +17,12 @@ const query = ref("");
 const suggestions = ref<any[]>([]);
 const isOpen = ref(false);
 const loading = ref(false);
+const addressSelected = ref(false);
 
-let timer: any;
-watch(query, (q) => {
-  clearTimeout(timer);
-  if (!q) return (suggestions.value = []), (isOpen.value = false);
-  timer = setTimeout(fetchSuggestions, 500);
-});
+let inputRef = ref<HTMLInputElement | null>(null);
+
+const showError = ref(false);
+const addressError = "Sélectionner une adresse";
 
 async function fetchSuggestions() {
   loading.value = true;
@@ -41,6 +42,8 @@ async function fetchSuggestions() {
   isOpen.value = !!suggestions.value.length;
 }
 
+const debouncedFetch = useDebounceFn(fetchSuggestions, 300);
+
 function select(feature: any) {
   query.value = feature.properties.label;
   suggestions.value = [];
@@ -56,20 +59,52 @@ function select(feature: any) {
   localStorage.setItem("address", JSON.stringify(payload));
   store.save(payload);
   isOpen.value = false;
+  nextTick(() => {
+    addressSelected.value = true;
+  });
 }
 
+async function submit() {
+  if (!addressSelected.value) {
+    showError.value = true;
+    setTimeout(() => {
+      showError.value = false;
+    }, 1500);
+    return;
+  }
+  emit("refresh");
+  await router.push("/estimation-en-ligne-bien-immobilier");
+}
+
+watch(query, (newVal) => {
+  addressSelected.value = false;
+
+  if (!newVal) {
+    suggestions.value = [];
+    isOpen.value = false;
+    return;
+  }
+  debouncedFetch();
+});
+
 onClickOutside(target, () => (isOpen.value = false), {});
+
+onMounted(async () => {
+  await nextTick();
+  inputRef.value?.focus();
+});
 </script>
 
 <template>
   <form
     ref="target"
     class="location-form"
-    @submit.prevent
+    @submit.prevent="submit"
     :class="{ open: isOpen }"
   >
     <div class="location-form__input-field">
       <input
+        ref="inputRef"
         class="location-form__input-field__input"
         type="text"
         placeholder="10 rue de la tranquillité, 75140, Paris..."
@@ -78,20 +113,8 @@ onClickOutside(target, () => (isOpen.value = false), {});
       />
     </div>
 
-    <NuxtLink
-      to="/estimation-en-ligne-bien-immobilier"
-      @click="emit('refresh')"
-      class="button"
-    >
-      <PrimaryButton variant="accent-color">Obtenir une offre</PrimaryButton>
-    </NuxtLink>
     <Transition>
       <ul v-if="isOpen" class="autocomplete">
-        <Transition
-          ><UICircularLoader
-            v-if="loading"
-            :color="colors['secondary-color-faded']"
-        /></Transition>
         <li
           class="autocomplete__suggestion"
           v-for="suggestion in suggestions"
@@ -103,6 +126,16 @@ onClickOutside(target, () => (isOpen.value = false), {});
         </li>
       </ul></Transition
     >
+
+    <PrimaryButton
+      type="submit"
+      :variant="showError ? 'error-color' : 'accent-color'"
+      class="button"
+      :icon="loading ? 'circle_notch' : undefined"
+      @click="submit"
+    >
+      {{ showError ? addressError : "Obtenir une offre" }}
+    </PrimaryButton>
   </form>
 </template>
 

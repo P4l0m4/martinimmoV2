@@ -16,7 +16,7 @@ const discountTable: Record<0 | 1 | 2 | 3, number> = {
 const discountPct = computed(() => discountTable[level.value]);
 
 const legends = [
-  "",
+  "Pas de travaux à prévoir",
   "Rafraîchissement léger (peintures, sols…)",
   "Rénovation partielle (cuisine / SDB, électricité partielle…)",
   "Grosse rénovation (restructuration, copro travaux…)",
