@@ -345,13 +345,13 @@ watch(
             <PrimaryButton
               icon="copy"
               @click.prevent.stop="
-                copyToClipboard('https://martinimmo.netlify.app/')
+                copyToClipboard('https://martinimmov2.netlify.app/')
               "
               @keydown.enter.prevent.stop="
-                copyToClipboard('https://martinimmo.netlify.app/')
+                copyToClipboard('https://martinimmov2.netlify.app/')
               "
               @keydown.space.prevent.stop="
-                copyToClipboard('https://martinimmo.netlify.app/')
+                copyToClipboard('https://martinimmov2.netlify.app/')
               "
             >
               {{ shareButtonLabel }}
