@@ -66,6 +66,8 @@ function toggleShowPassword() {
       style="cursor: pointer"
       v-if="type === 'password' && showPassword"
       @click="toggleShowPassword"
+      @keydown.enter="toggleShowPassword"
+      @keydown.space="toggleShowPassword"
     />
     <IconComponent
       icon="eye_off"
@@ -73,6 +75,8 @@ function toggleShowPassword() {
       style="cursor: pointer"
       v-if="type === 'password' && !showPassword"
       @click="toggleShowPassword"
+      @keydown.enter="toggleShowPassword"
+      @keydown.space="toggleShowPassword"
     />
   </div>
   <!-- <span class="input-error" v-if="error"></span> -->

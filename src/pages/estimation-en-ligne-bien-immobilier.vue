@@ -2,6 +2,7 @@
 import { computed, onMounted } from "vue";
 import { useRuntimeConfig } from "#app";
 import { useAddressStore } from "@/stores/addressStore";
+import { updateEstimationFormInfo } from "@/utils/supabaseFunctions";
 import { isMobile } from "@/utils/otherFunctions";
 import { colors } from "@/utils/colors";
 
@@ -23,14 +24,13 @@ const groundFloor = ref(false);
 const mapLoaded = ref(false);
 
 const mapSrc = computed(() => {
-  if (!address.value?.latLng) return null;
+  if (!address.value?.geometry.coordinates) return null;
 
-  const { lat, lng } = address.value.latLng;
   const [w, h] = (isMobile() ? "500x500" : "600x600").split("x");
 
   const color = "%23ff0000"; // rouge
   const marker =
-    `lonlat:${lng},${lat}` +
+    `lonlat:${address.value.geometry.coordinates[0]},${address.value.geometry.coordinates[1]}` +
     `;type:material` +
     `;size:large` +
     `;color:${color}` +
@@ -40,7 +40,7 @@ const mapSrc = computed(() => {
     "https://maps.geoapify.com/v1/staticmap" +
     `?style=osm-bright-smooth` +
     `&width=${w}&height=${h}` +
-    `&center=lonlat:${lng},${lat}` +
+    `&center=lonlat:${address.value.geometry.coordinates[0]},${address.value.geometry.coordinates[1]}` +
     `&zoom=17` +
     `&marker=${marker}` +
     `&scaleFactor=2` +
@@ -49,7 +49,7 @@ const mapSrc = computed(() => {
 });
 
 async function findCityCenter() {
-  const city = address.value?.components?.city;
+  const city = address.value?.properties?.city;
   if (!city) return null;
 
   const res = await fetch(
@@ -99,7 +99,7 @@ function clearLocalStorageAndRefresh() {
 const postalCode = computed(() => {
   if (!address.value) return null;
 
-  const match = address.value.formatted.match(/\b\d{5}\b/); // 5 chiffres consécutifs
+  const match = address.value.properties.label.match(/\b\d{5}\b/); // 5 chiffres consécutifs
   const postalCode = match ? match[0] : null;
   return postalCode;
 });
@@ -110,15 +110,15 @@ const showForm = computed(() => {
   return !!(mapSrc.value && !showDVFResults.value);
 });
 
-function dataFromEstimationForm(data: {
-  surface: number;
-  surfaceHabitable: number;
-  rooms: number;
+async function dataFromEstimationForm(data: {
+  surface?: number;
+  surfaceHabitable?: number;
+  rooms?: number;
   expectedRenovationDiscount: number;
-  typeLocal: string;
-  DPE: string;
+  typeLocal?: string;
+  DPE?: string;
   equipments: string[];
-  discalifications: string[];
+  discalifications?: string[];
   groundFloor: boolean;
 }) {
   surface.value = data.surface;
@@ -128,9 +128,21 @@ function dataFromEstimationForm(data: {
   expectedRenovationDiscount.value = data.expectedRenovationDiscount;
   DPE.value = data.DPE;
   equipments.value = [...data.equipments];
-  discalifications.value = [...data.discalifications];
+  discalifications.value = [...(data.discalifications ?? [])];
   groundFloor.value = data.groundFloor;
   showDVFResults.value = true;
+
+  await updateEstimationFormInfo(address.value, {
+    surface_batie: data.surface,
+    surface_habitable: data.surfaceHabitable,
+    rooms: data.rooms,
+    type_local: data.typeLocal,
+    renovation_discount: data.expectedRenovationDiscount,
+    DPE: data.DPE,
+    equipments: data.equipments,
+    discalifications: data.discalifications,
+    ground_floor: data.groundFloor,
+  });
 }
 
 watch(address, async () => {
@@ -150,13 +162,12 @@ onMounted(() => {
         class="estimation-en-ligne__map-container"
         v-show="!showDVFResults && address"
       >
-        <img
+        <div
           class="map"
           v-if="mapSrc"
-          :src="mapSrc"
-          alt="Carte de l'adresse sélectionnée"
+          :style="{ backgroundImage: `url(${mapSrc})` }"
           @load="mapLoaded = true"
-        />
+        ></div>
         <div class="map-loader" v-if="!mapLoaded">
           <UICircularLoader :color="colors['accent-color']" />
         </div>
@@ -164,11 +175,13 @@ onMounted(() => {
           v-if="address"
           class="estimation-en-ligne__map-container__address"
           @click="clearLocalStorageAndRefresh"
+          @keydown.enter="clearLocalStorageAndRefresh"
+          @keydown.space="clearLocalStorageAndRefresh"
           tabindex="0"
           aria-label="Cliquez pour changer l'adresse"
           role="button"
         >
-          {{ address.formatted }}
+          {{ address.properties.label }}
 
           <IconComponent class="address__icon" icon="x_bold" size="1.15rem" />
         </p>
@@ -308,6 +321,7 @@ onMounted(() => {
       object-fit: cover;
       object-position: center;
       border-radius: 1.5rem;
+      z-index: 1;
     }
 
     .map-loader {

@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
+import { useAddressStore } from "@/stores/addressStore";
 import { formattedValue } from "@/utils/otherFunctions";
+import {
+  updateOffer,
+  updateEstimate,
+  updateClickedOnVisit,
+} from "@/utils/supabaseFunctions";
 import { colors } from "@/utils/colors";
 
 interface Props {
@@ -8,7 +14,7 @@ interface Props {
   year?: string;
   surface: number;
   surfaceHabitable: number;
-  pieces: number;
+  rooms: number;
   limit?: number;
   typeLocal: string;
   expectedRenovationDiscount: number;
@@ -41,6 +47,15 @@ const loading = ref(false);
 const error = ref<string | null>(null);
 const records = ref<DvfRecord[]>([]);
 
+const store = useAddressStore();
+const address = store.readFromLocalStorage();
+
+const clickedOnVisit = ref(false);
+const clickedOnAgent = ref(false);
+
+const isPopUpOpen = ref(false);
+const shareButtonLabel = ref("Partager l'outil");
+
 function buildUrl(year?: string, limit = props.limit) {
   const base =
     "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/" +
@@ -53,8 +68,8 @@ function buildUrl(year?: string, limit = props.limit) {
   if (year) p.append("refine", `date_mutation:"${year}"`);
   // if (props.surface) p.append("refine", `surface_reelle_bati:${props.surface}`);
   if (props.typeLocal) p.append("refine", `type_local:"${props.typeLocal}"`);
-  if (props.pieces)
-    p.append("refine", `nombre_pieces_principales:${props.pieces}`);
+  if (props.rooms)
+    p.append("refine", `nombre_pieces_principales:${props.rooms}`);
 
   return `${base}?${p.toString()}`;
 }
@@ -90,23 +105,26 @@ async function fetchData() {
   }
 }
 
-watch(
-  () => [
-    props.postalCode,
-    props.year,
-    props.surface,
-    props.surfaceHabitable,
-    props.pieces,
-    props.limit,
-    props.typeLocal,
-    props.discalifications,
-    props.groundFloor,
-  ],
-  () => {
-    fetchData();
-  },
-  { immediate: true }
-);
+function triggerPopUp(type: "visit" | "agent") {
+  if (type === "visit") {
+    clickedOnVisit.value = true;
+    updateClickedOnVisit(address, true);
+  } else if (type === "agent") {
+    clickedOnAgent.value = true;
+    updateClickedOnAgent(address, true);
+  }
+  isPopUpOpen.value = true;
+}
+
+function copyToClipboard(text: string) {
+  navigator.clipboard.writeText(text).then(() => {
+    shareButtonLabel.value = "Lien copié dans le presse-papiers :)";
+
+    setTimeout(() => {
+      shareButtonLabel.value = "Partager l'outil";
+    }, 2000);
+  });
+}
 
 const averageValue = computed(() => {
   if (records.value.length === 0) return null;
@@ -222,9 +240,46 @@ const estimatedValue = computed(() => {
 
 const offeredValue = computed(() => {
   if (!estimatedValue.value) return null;
-
   return Math.round(estimatedValue.value * marginFactor.value);
 });
+
+watch(
+  () => [
+    props.postalCode,
+    props.year,
+    props.surface,
+    props.surfaceHabitable,
+    props.rooms,
+    props.limit,
+    props.typeLocal,
+    props.discalifications,
+    props.groundFloor,
+  ],
+  () => {
+    fetchData();
+  },
+  { immediate: true }
+);
+
+watch(
+  estimatedValue,
+  (val) => {
+    if (val == null) return;
+
+    updateEstimate(address, val);
+  },
+  { immediate: false }
+);
+
+watch(
+  offeredValue,
+  (val) => {
+    if (val == null) return;
+
+    updateOffer(address, val);
+  },
+  { immediate: false }
+);
 </script>
 <template>
   <section class="dvf-results">
@@ -253,12 +308,19 @@ const offeredValue = computed(() => {
               size="2rem"
             />
           </span>
-          <PrimaryButton variant="accent-color" icon="calendar_dots_fill"
+          <PrimaryButton
+            variant="accent-color"
+            icon="calendar_dots_fill"
+            @click="triggerPopUp('visit')"
+            @keydown.enter="triggerPopUp('visit')"
+            @keydown.space="triggerPopUp('visit')"
             >Programmer une visite</PrimaryButton
           >
           <button
             class="dvf-results__offer__wrapper__button"
             @click="$emit('redoEstimate')"
+            @keydown.enter="$emit('redoEstimate')"
+            @keydown.space="$emit('redoEstimate')"
           >
             Refaire une estimation
           </button>
@@ -274,6 +336,27 @@ const offeredValue = computed(() => {
               >
             </div>
           </DropDown>
+          <UIPopUp
+            v-if="isPopUpOpen"
+            @close="isPopUpOpen = false"
+            title=" Merci !"
+            subtitle="MartinImmo est encore au stade de projet. Plus vous êtes nombreux à l'utiliser, plus nous augmentons nos chances de voir le jour!"
+          >
+            <PrimaryButton
+              icon="copy"
+              @click.prevent.stop="
+                copyToClipboard('https://martinimmo.netlify.app/')
+              "
+              @keydown.enter.prevent.stop="
+                copyToClipboard('https://martinimmo.netlify.app/')
+              "
+              @keydown.space.prevent.stop="
+                copyToClipboard('https://martinimmo.netlify.app/')
+              "
+            >
+              {{ shareButtonLabel }}
+            </PrimaryButton>
+          </UIPopUp>
         </div>
         <UIStepsVertical /></div
     ></template>
@@ -300,6 +383,8 @@ const offeredValue = computed(() => {
         <button
           class="dvf-results__estimate__wrapper__button"
           @click="$emit('redoEstimate')"
+          @keydown.enter="$emit('redoEstimate')"
+          @keydown.space="$emit('redoEstimate')"
         >
           Refaire une estimation
         </button>
@@ -324,7 +409,12 @@ const offeredValue = computed(() => {
           Mais nous pouvons confier votre projet à l’un de nos agents
           immobiliers partenaires
         </p>
-        <PrimaryButton variant="accent-color" icon="phone_fill"
+        <PrimaryButton
+          variant="accent-color"
+          icon="phone_fill"
+          @click="triggerPopUp('agent')"
+          @keydown.enter="triggerPopUp('agent')"
+          @keydown.space="triggerPopUp('agent')"
           >Être recontacté par un agent</PrimaryButton
         >
         <button class="dvf-results__estimate__external-contact__button">
@@ -333,7 +423,7 @@ const offeredValue = computed(() => {
       </div>
     </div>
 
-    <CircularLoader v-if="loading" />
+    <UICircularLoader v-if="loading" />
     <div v-else-if="error" class="error">Erreur : {{ error }}</div>
   </section>
 </template>

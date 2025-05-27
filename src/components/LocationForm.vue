@@ -5,7 +5,7 @@ import { onClickOutside, useDebounceFn } from "@vueuse/core";
 import { useTemplateRef } from "vue";
 import { isMobile } from "@/utils/otherFunctions";
 import { useAddressStore } from "@/stores/addressStore";
-// import { insertAddressInDB } from "@/utils/supabaseFunctions";
+import { insertAddressInDB } from "@/utils/supabaseFunctions";
 
 const emit = defineEmits(["refresh"]);
 
@@ -48,17 +48,10 @@ const debouncedFetch = useDebounceFn(fetchSuggestions, 300);
 function select(feature: any) {
   query.value = feature.properties.label;
   suggestions.value = [];
-  // insertAddressInDB(feature);
-  const payload = {
-    formatted: feature.properties.label,
-    latLng: {
-      lat: feature.geometry.coordinates[1],
-      lng: feature.geometry.coordinates[0],
-    },
-    components: feature.properties,
-  };
-  localStorage.setItem("address", JSON.stringify(payload));
-  store.save(payload);
+  insertAddressInDB(feature);
+
+  localStorage.setItem("address", JSON.stringify(feature));
+  store.save(feature);
 
   isOpen.value = false;
   nextTick(() => {
@@ -115,19 +108,21 @@ onMounted(async () => {
       />
     </div>
 
-    <Transition>
-      <ul v-if="isOpen" class="autocomplete">
-        <li
-          class="autocomplete__suggestion"
-          v-for="suggestion in suggestions"
-          :key="suggestion.properties.id"
+    <ul v-if="isOpen" class="autocomplete">
+      <li
+        class="autocomplete__suggestion"
+        v-for="suggestion in suggestions"
+        :key="suggestion.properties.id"
+      >
+        <button
+          @click="select(suggestion)"
+          @keydown.enter="select(suggestion)"
+          @keydown.space="select(suggestion)"
         >
-          <button @click="select(suggestion)">
-            {{ suggestion.properties.label }}
-          </button>
-        </li>
-      </ul></Transition
-    >
+          {{ suggestion.properties.label }}
+        </button>
+      </li>
+    </ul>
 
     <PrimaryButton
       type="submit"
@@ -135,6 +130,8 @@ onMounted(async () => {
       class="button"
       :icon="loading ? 'circle_notch' : undefined"
       @click="submit"
+      @keydown.enter="submit"
+      @keydown.space="submit"
     >
       {{ showError ? addressError : "Obtenir une offre" }}
     </PrimaryButton>

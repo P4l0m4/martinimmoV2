@@ -6,7 +6,15 @@ const emit = defineEmits(["closeConfirmation"]);
 </script>
 
 <template>
-  <section class="pop-up" @click="emit('closeConfirmation')">
+  <section
+    class="pop-up"
+    @click="emit('closeConfirmation')"
+    @keydown.esc="emit('closeConfirmation')"
+    @keydown.enter="emit('closeConfirmation')"
+    @keydown.space="emit('closeConfirmation')"
+    tabindex="0"
+    aria-label="fermer la fenêtre"
+  >
     <div class="pop-up__content" ref="target">
       <span class="paragraphs"><slot /></span>
       <slot name="button" />

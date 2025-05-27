@@ -1,9 +1,6 @@
-export interface LatLng {
-  lat: number;
-  lng: number;
-}
+export type LatLng = number[];
 
-export interface AddressComponents {
+export interface AddressProperties {
   _type: string;
   banId: string;
   /** Ville : « Chambéry ». */
@@ -37,7 +34,26 @@ export interface AddressComponents {
   formatted?: string;
 }
 
+export interface AddressGeometry {
+  /** Coordonnées géographiques (WGS84) de l'adresse. */
+  coordinates: LatLng;
+  /** Type de géométrie : `Point`, `LineString`, `Polygon`, … */
+  type: string;
+}
+
 export interface Address {
-  components: AddressComponents;
-  latLng: LatLng;
+  properties: AddressProperties;
+  geometry: AddressGeometry;
+}
+
+export interface estimationFormInfo {
+  surface_batie?: number | null;
+  surface_habitable?: number | null;
+  rooms?: number | null;
+  renovation_discount?: number | null;
+  type_local?: string | null;
+  DPE?: string | null;
+  ground_floor?: boolean | null;
+  equipments?: string[] | null; // tableau → jsonb
+  discalifications?: string[] | null; // tableau → jsonb
 }

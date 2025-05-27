@@ -89,7 +89,7 @@ const form = reactive({
     (acc: any, o: { key: any }) => ({ ...acc, [o.key]: false }),
     {}
   ),
-  groundFloor: undefined as Boolean | undefined,
+  groundFloor: false as Boolean,
 });
 
 const rules = {
@@ -298,8 +298,8 @@ async function handleSubmit() {
       variant="primary-color"
       icon="arrow_right"
       @click="checkStep0Validation"
-      @keydown.enter.prevent="checkStep0Validation"
-      @keydown.space.prevent="checkStep0Validation"
+      @keydown.enter="checkStep0Validation"
+      @keydown.space="checkStep0Validation"
       style="margin-top: auto"
     >
       Étape suivante
