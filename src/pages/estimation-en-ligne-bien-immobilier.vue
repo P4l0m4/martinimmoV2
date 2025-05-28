@@ -11,7 +11,7 @@ import { colors } from "@/utils/colors";
 
 const cfg = useRuntimeConfig();
 const store = useAddressStore();
-const address = ref(store.readFromLocalStorage());
+const address = ref();
 
 const surface = ref();
 const surfaceHabitable = ref();
@@ -162,6 +162,8 @@ watch(address, async () => {
 
 onMounted(() => {
   window.scrollTo(0, 0);
+
+  address.value = store.readFromLocalStorage();
 });
 </script>
 <template>
