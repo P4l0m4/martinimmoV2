@@ -18,6 +18,7 @@ const emit = defineEmits<{
       expectedRenovationDiscount: number;
       typeLocal: string | undefined;
       DPE?: string | undefined;
+      localAge?: string | undefined;
       equipments: string[];
       discalifications: string[];
       groundFloor: boolean;
@@ -89,6 +90,7 @@ const form = reactive({
     (acc: any, o: { key: any }) => ({ ...acc, [o.key]: false }),
     {}
   ),
+  localAge: undefined as string | undefined,
   groundFloor: false as Boolean,
 });
 
@@ -114,6 +116,7 @@ const rules = {
 
   typeLocal: { required },
   DPE: { required },
+  localAge: { required },
 };
 
 const v$ = useVuelidate(rules, form);
@@ -181,6 +184,14 @@ const DPEErrors = computed(() => {
   return e;
 });
 
+const localAgeErrors = computed(() => {
+  const e: string[] = [];
+  if (!v$.value.localAge.$dirty) return e;
+  if (v$.value.localAge.required.$invalid)
+    e.push("Sélectionnez l'ancienneté du bien");
+  return e;
+});
+
 const visibleCheckboxes = computed(() =>
   checkboxOptions.filter(
     (o) => !form.typeLocal || o.belongsTo.includes(form.typeLocal)
@@ -229,6 +240,7 @@ async function handleSubmit() {
     expectedRenovationDiscount: form.expectedRenovationDiscount,
     typeLocal: form.typeLocal,
     DPE: form.DPE,
+    localAge: form.localAge,
     equipments: selectedEquipments.value,
     discalifications: selectedDiscalifications.value,
     groundFloor: form.groundFloor,
@@ -288,6 +300,7 @@ async function handleSubmit() {
     <RenovationDifficulty v-model="form.expectedRenovationDiscount" />
 
     <CheckboxField
+      v-if="form.typeLocal === 'Appartement'"
       id="groundFloor"
       name="groundFloor"
       label="Situé en rez-de-chaussée"
@@ -353,6 +366,23 @@ async function handleSubmit() {
     />
 
     <SelectField
+      id="localAge"
+      name="anciennete"
+      label="Ancienneté du bien"
+      v-model="form.localAge"
+      :error="localAgeErrors[0]"
+      :options="[
+        'Neuf',
+        '1 à 5 ans',
+        '5 à 10 ans',
+        '10 à 20 ans',
+        'Plus de 20 ans',
+      ]"
+      defaultLabel="Ancienneté du bien"
+      icon="calendar_dots"
+    />
+
+    <SelectField
       id="DPE"
       name="DPE"
       label="DPE"
@@ -384,11 +414,14 @@ async function handleSubmit() {
 
     <div
       class="errors"
-      v-if="surfaceErrors[0] || roomsErrors[0] || DPEErrors[0]"
+      v-if="
+        surfaceErrors[0] || roomsErrors[0] || localAgeErrors[0] || DPEErrors[0]
+      "
     >
       <span v-for="e in surfaceErrors" :key="e">{{ e }}</span>
       <span v-for="e in roomsErrors" :key="e">{{ e }}</span>
       <span v-for="e in DPEErrors" :key="e">{{ e }}</span>
+      <span v-for="e in localAgeErrors" :key="e">{{ e }}</span>
     </div>
   </form>
 </template>

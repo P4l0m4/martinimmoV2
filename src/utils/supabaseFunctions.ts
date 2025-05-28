@@ -1,4 +1,4 @@
-import type { Address, estimationFormInfo } from "@/utils/types";
+import type { Address, EstimationFormInfo } from "@/utils/types";
 
 export async function insertAddressInDB(address: Address) {
   const { $supabase } = useNuxtApp();
@@ -39,7 +39,7 @@ export async function getAllDataFromDB() {
 //met à jour les infos dans la ligne correspondant à l'adresse indiquée
 export async function updateEstimationFormInfo(
   address: Address,
-  payload: estimationFormInfo
+  payload: EstimationFormInfo
 ) {
   const { $supabase } = useNuxtApp();
 
@@ -52,6 +52,7 @@ export async function updateEstimationFormInfo(
       renovation_discount: payload.renovation_discount ?? null,
       type_local: payload.type_local ?? null,
       DPE: payload.DPE ?? null,
+      local_age: payload.local_age ?? null,
       ground_floor: payload.ground_floor,
       equipments: payload.equipments ?? null,
       disqualifications: payload.discalifications ?? null,

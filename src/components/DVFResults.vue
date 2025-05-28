@@ -19,6 +19,7 @@ interface Props {
   typeLocal: string;
   expectedRenovationDiscount: number;
   DPE: string;
+  localAge: string;
   isDownTown: boolean;
   equipments?: string[];
   discalifications: string[];

@@ -46,13 +46,14 @@ export interface Address {
   geometry: AddressGeometry;
 }
 
-export interface estimationFormInfo {
+export interface EstimationFormInfo {
   surface_batie?: number | null;
   surface_habitable?: number | null;
   rooms?: number | null;
   renovation_discount?: number | null;
   type_local?: string | null;
   DPE?: string | null;
+  local_age?: string | null;
   ground_floor?: boolean | null;
   equipments?: string[] | null; // tableau → jsonb
   discalifications?: string[] | null; // tableau → jsonb

@@ -19,6 +19,7 @@ const rooms = ref();
 const typeLocal = ref();
 const expectedRenovationDiscount = ref(0);
 const DPE = ref();
+const localAge = ref();
 const isAdressInDowntown = ref(false);
 const equipments = ref<string[]>([]);
 const discalifications = ref<string[]>([]);
@@ -120,6 +121,7 @@ async function dataFromEstimationForm(data: {
   expectedRenovationDiscount: number;
   typeLocal?: string;
   DPE?: string;
+  localAge?: string;
   equipments: string[];
   discalifications: string[];
   groundFloor: boolean;
@@ -130,6 +132,7 @@ async function dataFromEstimationForm(data: {
   typeLocal.value = data.typeLocal;
   expectedRenovationDiscount.value = data.expectedRenovationDiscount;
   DPE.value = data.DPE;
+  localAge.value = data.localAge;
   equipments.value = [...data.equipments];
   discalifications.value = [...(data.discalifications ?? [])];
   groundFloor.value = data.groundFloor;
@@ -142,6 +145,7 @@ async function dataFromEstimationForm(data: {
     type_local: data.typeLocal,
     renovation_discount: data.expectedRenovationDiscount,
     DPE: data.DPE,
+    local_age: data.localAge,
     equipments: data.equipments,
     discalifications: data.discalifications,
     ground_floor: data.groundFloor,
@@ -237,6 +241,7 @@ onMounted(() => {
           :rooms="rooms"
           :expectedRenovationDiscount="expectedRenovationDiscount"
           :DPE="DPE"
+          :localAge="localAge"
           :equipments="equipments"
           :isDownTown="isAdressInDowntown"
           :discalifications="discalifications"
