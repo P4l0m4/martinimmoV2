@@ -75,7 +75,7 @@
         <h5 class="footer__links-container__links__title">Vos questions</h5>
 
         <li class="footer__links-container__links__li">
-          <NuxtLink to="/estimation-en-ligne-bien-immobilier">F.A.Q.</NuxtLink>
+          <NuxtLink to="/faq">F.A.Q.</NuxtLink>
         </li>
         <li class="footer__links-container__links__li">
           <NuxtLink to="/estimation-en-ligne-bien-immobilier"

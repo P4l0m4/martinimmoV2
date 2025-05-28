@@ -2,7 +2,10 @@
 import { computed, onMounted } from "vue";
 import { useRuntimeConfig } from "#app";
 import { useAddressStore } from "@/stores/addressStore";
-import { updateEstimationFormInfo } from "@/utils/supabaseFunctions";
+import {
+  updateEstimationFormInfo,
+  incrementAmountOfTrials,
+} from "@/utils/supabaseFunctions";
 import { isMobile } from "@/utils/otherFunctions";
 import { colors } from "@/utils/colors";
 
@@ -118,7 +121,7 @@ async function dataFromEstimationForm(data: {
   typeLocal?: string;
   DPE?: string;
   equipments: string[];
-  discalifications?: string[];
+  discalifications: string[];
   groundFloor: boolean;
 }) {
   surface.value = data.surface;
@@ -143,6 +146,8 @@ async function dataFromEstimationForm(data: {
     discalifications: data.discalifications,
     ground_floor: data.groundFloor,
   });
+
+  await incrementAmountOfTrials(address.value);
 }
 
 watch(address, async () => {

@@ -21,7 +21,7 @@ interface Props {
   DPE: string;
   isDownTown: boolean;
   equipments?: string[];
-  discalifications?: string[];
+  discalifications: string[];
   groundFloor: boolean;
 }
 
@@ -73,8 +73,6 @@ function buildUrl(year?: string, limit = props.limit) {
 
   return `${base}?${p.toString()}`;
 }
-
-// const apiUrl = computed(() => buildUrl(props.year));
 
 const FIRST_YEAR = 2014;
 async function fetchData() {
@@ -243,6 +241,18 @@ const offeredValue = computed(() => {
   return Math.round(estimatedValue.value * marginFactor.value);
 });
 
+const discalified = computed(() => {
+  if (!offeredValue.value) return null;
+
+  return (
+    props.DPE === "F" ||
+    props.DPE === "G" ||
+    props.expectedRenovationDiscount === 20 ||
+    props.discalifications.length > 0 ||
+    offeredValue.value > 400000
+  );
+});
+
 watch(
   () => [
     props.postalCode,
@@ -283,7 +293,7 @@ watch(
 </script>
 <template>
   <section class="dvf-results">
-    <template v-if="discalifications?.length === 0 || undefined || null">
+    <template v-if="!discalified">
       <h1 class="titles">Félicitations !</h1>
       <h2 class="subtitles">
         Votre {{ typeLocal.toLowerCase() }} nous a tapé dans l’oeil 👀

@@ -1,115 +1,102 @@
-<template>
-  <div class="wrapper">
-    <svg class="donut-chart" viewBox="0 0 100 100">
-      <circle class="segment" cx="50" cy="50" r="40" />
-      <circle
-        v-for="(segment, index) in computedSegments"
-        :key="index"
-        :class="segment.color"
-        :stroke-dasharray="`${segment.percent} ${
-          circumference - segment.percent
-        }`"
-        :stroke-dashoffset="segment.offset"
-        class="segment"
-        cx="50"
-        cy="50"
-        r="40"
-      />
-    </svg>
-    <span class="valid-segments-count" v-if="validSegments !== undefined">
-      {{ validSegments }}/{{ maxValue }}
-    </span>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { computed } from "vue";
+import { ref, onMounted, onBeforeUnmount, watch } from "vue";
+import * as echarts from "echarts";
+import { useResizeObserver } from "@vueuse/core";
+import { colors } from "@/utils/colors";
 
-type Segment = {
-  value: number;
-  color: "green" | "blue" | "purple" | "red" | "orange" | "yellow";
-};
+const props = withDefaults(
+  defineProps<{
+    title: string;
+    data: { name: string; value: number }[];
+    width?: string;
+    height?: string;
+  }>(),
+  {
+    width: "100%",
+    height: "400px",
+  }
+);
 
-type ComputedSegment = {
-  color: "green" | "blue" | "purple" | "red" | "orange" | "yellow";
-  percent: number;
-  offset: number;
-};
+const container = ref<HTMLDivElement | null>(null);
+const chart = ref<echarts.ECharts | null>(null);
 
-const props = defineProps<{
-  segments: Segment[];
-  maxValue?: number;
-  validSegments?: number;
-}>();
+useResizeObserver(container, () => chart.value?.resize());
 
-const circumference = Math.PI * 80;
-
-const totalValue = computed(() => {
-  const sumOfValues = props.segments.reduce(
-    (acc, segment) => acc + segment.value,
-    0
-  );
-  return Math.max(props.maxValue ?? 0, sumOfValues);
-});
-
-const computedSegments = computed<ComputedSegment[]>(() => {
-  let nextOffset = circumference / 4;
-  return props.segments.map((segment) => {
-    const percent = (segment.value / totalValue.value) * circumference;
-    const currentSegment = {
-      color: segment.color,
-      percent,
-      offset: nextOffset,
-    };
-    nextOffset -= percent;
-    return currentSegment;
+onMounted(() => {
+  chart.value = echarts.init(container.value!);
+  chart.value.setOption({
+    title: {
+      text: props.title,
+      left: "center",
+      top: "10",
+      textStyle: {
+        color: colors["primary-color"],
+        fontWeight: "600",
+        fontSize: 24,
+        fontFamily: "Figtree",
+      },
+    },
+    tooltip: { trigger: "item", formatter: "{b}: {c} ({d}%)" },
+    legend: {
+      bottom: 0,
+      textStyle: {
+        color: colors["primary-color"],
+        fontWeight: "400",
+        fontSize: 16,
+        fontFamily: "Figtree",
+      },
+    },
+    series: [
+      {
+        type: "pie",
+        radius: ["40%", "70%"],
+        avoidLabelOverlap: false,
+        label: { show: false },
+        emphasis: {
+          label: {
+            show: true,
+            fontWeight: "bold",
+            color: colors["primary-color"],
+          },
+        },
+        itemStyle: {
+          borderRadius: 6,
+          borderColor: colors["accent-color"],
+          borderWidth: 2,
+        },
+        data: props.data.map((d, i) => ({
+          ...d,
+          itemStyle: {
+            color: [colors["accent-color"], colors["accent-color-faded"]][i],
+          },
+        })),
+      },
+    ],
   });
 });
+
+onBeforeUnmount(() => chart.value?.dispose());
+
+watch(
+  () => props.data,
+  () => {
+    chart.value?.setOption({
+      series: [
+        {
+          data: props.data.map((d, i) => ({
+            ...d,
+            itemStyle: {
+              color: [colors["accent-color"], colors["accent-color-faded"]][i],
+            },
+          })),
+        },
+      ],
+    });
+  },
+  { immediate: true }
+);
 </script>
 
-<style scoped lang="scss">
-.wrapper {
-  position: relative;
-  transform: scale(1.5);
-}
-
-.donut-chart {
-  width: 100px;
-  height: 100px;
-}
-
-.segment {
-  stroke: $primary-color;
-  stroke-width: 10;
-  fill: transparent;
-
-  &.green {
-    stroke: $success-color;
-  }
-  &.blue {
-    stroke: $success-color;
-  }
-  &.purple {
-    stroke: $loading-color;
-  }
-  &.red {
-    stroke: $error-color;
-  }
-  &.orange {
-    stroke: orange;
-  }
-  &.yellow {
-    stroke: yellow;
-  }
-}
-
-.valid-segments-count {
-  font-size: 1.5rem;
-  font-weight: $semi-bold;
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  height: fit-content;
-  width: fit-content;
-}
-</style>
+<template>
+  <div ref="container" :style="{ width: props.width, height: props.height }" />
+</template>

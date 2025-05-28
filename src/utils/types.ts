@@ -57,3 +57,11 @@ export interface estimationFormInfo {
   equipments?: string[] | null; // tableau → jsonb
   discalifications?: string[] | null; // tableau → jsonb
 }
+
+// series provided to the bar chart
+export interface BarSeriesItem {
+  name: string;
+  type: "bar";
+  data: number[];
+  itemStyle: { color: string };
+}

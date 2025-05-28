@@ -19,7 +19,7 @@ const emit = defineEmits<{
       typeLocal: string | undefined;
       DPE?: string | undefined;
       equipments: string[];
-      discalifications?: string[];
+      discalifications: string[];
       groundFloor: boolean;
     }
   ];

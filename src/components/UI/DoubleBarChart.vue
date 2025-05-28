@@ -9,7 +9,8 @@ const props = withDefaults(
     title: string;
     tooltip?: object;
     xAxisData: string[];
-    seriesCounts: number[];
+    data1: number[];
+    data2: number[];
     width?: string;
     height?: string;
   }>(),
@@ -29,10 +30,11 @@ useResizeObserver(chartContainerRef, () => {
 onMounted(() => {
   chart.value = echarts.init(chartContainerRef.value);
 
-  chart.value?.setOption({
+  chart.value.setOption({
     title: {
       text: props.title,
       left: "center",
+      top: "10",
       textStyle: {
         color: colors["primary-color"],
         fontWeight: "600",
@@ -40,7 +42,16 @@ onMounted(() => {
         fontFamily: "Figtree",
       },
     },
-    tooltip: {},
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+    legend: {
+      bottom: 0,
+      textStyle: {
+        color: colors["primary-color"],
+        fontWeight: "400",
+        fontSize: 16,
+        fontFamily: "Figtree",
+      },
+    },
     xAxis: {
       data: props.xAxisData,
       axisLine: { lineStyle: { color: colors["primary-color"] } },
@@ -61,10 +72,17 @@ onMounted(() => {
     },
     series: [
       {
-        name: "Adresses",
+        name: "Avec offre",
         type: "bar",
-        data: props.seriesCounts,
+        data: props.data1,
         itemStyle: { color: colors["accent-color"] },
+      },
+      {
+        name: "Sans offre",
+        type: "bar",
+        stack: "total",
+        data: props.data2,
+        itemStyle: { color: colors["accent-color-faded"] },
       },
     ],
   });
@@ -75,17 +93,11 @@ onBeforeUnmount(() => {
 });
 
 watch(
-  () => [props.xAxisData, props.seriesCounts],
+  () => [props.xAxisData, props.data1, props.data2],
   () => {
     chart.value?.setOption({
-      xAxis: {
-        data: props.xAxisData,
-      },
-      series: [
-        {
-          data: props.seriesCounts,
-        },
-      ],
+      xAxis: { data: props.xAxisData },
+      series: [{ data: props.data1 }, { data: props.data2 }],
     });
   },
   { immediate: true }
