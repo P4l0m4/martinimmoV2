@@ -5,6 +5,8 @@ export const colors = {
   "accent-color": "#4885DE",
   "text-color": "#232323",
   "error-color": "#CB0000",
+  "warning-color": "#FFB901",
+  "gold-color": "#FFE492",
   "base-color-faded": "#f7f7f750",
   "secondary-color-faded": "#00065c50",
   "primary-color-faded": "#FFFDFA50",

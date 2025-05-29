@@ -24,6 +24,10 @@ function closePopUp() {
     aria-label="fermer la fenêtre"
   >
     <UIFlexCard
+      @click.stop
+      @keydown.esc.stop
+      @keydown.enter.stop
+      @keydown.space.stop
       ><span v-if="title" class="titles">{{ title }}</span>
       <p v-if="subtitle" class="paragraphs">{{ subtitle }}</p>
       <slot

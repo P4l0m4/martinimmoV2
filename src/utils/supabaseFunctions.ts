@@ -148,3 +148,21 @@ export async function updateClickedOnAgent(
 
   return data;
 }
+
+export async function updateRating(address: Address, rating: number) {
+  const { $supabase } = useNuxtApp();
+
+  const { data, error } = await $supabase
+    .from("info_from_estimation")
+    .update({ rating })
+    .filter("address->properties->>id", "eq", address.properties.id)
+    .select();
+
+  if (error) {
+    throw error;
+  } else {
+    console.log("Rating updated successfully", data);
+  }
+
+  return data;
+}

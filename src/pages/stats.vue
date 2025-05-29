@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from "vue";
 import { getAllDataFromDB } from "@/utils/supabaseFunctions";
 import type { SeriesData } from "@/components/UI/DoubleBarChart.vue";
+import type { Point } from "@/components/UI/FranceMap.vue";
 
 const data = ref<any[]>([]);
 
@@ -24,6 +25,8 @@ const noOffersPerDay = ref<SeriesData>({ name: "", data: [] });
 const averageOffer = ref();
 
 const ageRepartitionData = ref<{ name: string; value: number }[]>([]);
+
+const mapPoints = ref<Point[]>([]);
 
 onMounted(async () => {
   data.value = await getAllDataFromDB();
@@ -167,6 +170,20 @@ watch(
   },
   { immediate: true }
 );
+
+watch(
+  data,
+  () => {
+    mapPoints.value = data.value.map((r) => ({
+      name: r.address.properties.city,
+      coords: [
+        r.address.geometry.coordinates[0], // longitude
+        r.address.geometry.coordinates[1], // latitude
+      ],
+    }));
+  },
+  { immediate: true }
+);
 </script>
 <template>
   <GridContainer>
@@ -191,6 +208,9 @@ watch(
     </UIFlexCard>
     <UIFlexCard>
       <UIDonutChart title="Types de biens" :data="localTypeData" />
+    </UIFlexCard>
+    <UIFlexCard>
+      <UIFranceMap :points="mapPoints" />
     </UIFlexCard>
     <UIFlexCard>
       <UIDonutChart title="Essais" :data="trialsData" />

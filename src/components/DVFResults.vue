@@ -6,6 +6,8 @@ import {
   updateOffer,
   updateEstimate,
   updateClickedOnVisit,
+  updateClickedOnAgent,
+  updateRating,
 } from "@/utils/supabaseFunctions";
 import { colors } from "@/utils/colors";
 
@@ -123,6 +125,10 @@ function copyToClipboard(text: string) {
       shareButtonLabel.value = "Partager l'outil";
     }, 2000);
   });
+}
+
+function sendRatingToDB(rating: number) {
+  updateRating(address, rating);
 }
 
 const averageValue = computed(() => {
@@ -351,8 +357,9 @@ watch(
             v-if="isPopUpOpen"
             @close="isPopUpOpen = false"
             title=" Merci !"
-            subtitle="MartinImmo est encore au stade de projet. Plus vous êtes nombreux à l'utiliser, plus nous augmentons nos chances de voir le jour!"
+            subtitle="MartinImmo est encore en développement. Plus vous êtes nombreux à l'utiliser, plus nous augmentons nos chances de voir le jour!"
           >
+            <UIStarsRating @rating="sendRatingToDB" />
             <PrimaryButton
               icon="copy"
               @click.prevent.stop="
