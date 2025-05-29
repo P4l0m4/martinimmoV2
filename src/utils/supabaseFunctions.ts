@@ -11,6 +11,10 @@ export async function insertAddressInDB(address: Address) {
 
   if (selectErr) throw selectErr;
 
+  if (existing && existing.length > 0) {
+    return existing;
+  }
+
   // Si l'adresse n'existe pas, on l'insère
   const { data, error } = await $supabase
     .from("info_from_estimation")

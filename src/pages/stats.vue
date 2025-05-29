@@ -22,6 +22,8 @@ const noOffersPerDay = ref<number[]>([]);
 
 const averageOffer = ref();
 
+const ageRepartitionData = ref<{ name: string; value: number }[]>([]);
+
 onMounted(async () => {
   data.value = await getAllDataFromDB();
   console.log(data.value);
@@ -131,6 +133,32 @@ watch(
   },
   { immediate: true }
 );
+
+watch(
+  data,
+  () => {
+    const ageCounts = {
+      Neuf: 0,
+      "1 à 5 ans": 0,
+      "5 à 10 ans": 0,
+      "10 à 20 ans": 0,
+      "Plus de 20 ans": 0,
+    };
+
+    data.value.forEach((r) => {
+      if (r.local_age === "Neuf") ageCounts.Neuf++;
+      else if (r.local_age === "1 à 5 ans") ageCounts["1 à 5 ans"]++;
+      else if (r.local_age === "5 à 10 ans") ageCounts["5 à 10 ans"]++;
+      else if (r.local_age === "10 à 20 ans") ageCounts["10 à 20 ans"]++;
+      else if (r.local_age === "Plus de 20 ans") ageCounts["Plus de 20 ans"]++;
+    });
+
+    ageRepartitionData.value = Object.entries(ageCounts)
+      .filter(([, v]) => v > 0)
+      .map(([name, value]) => ({ name, value }));
+  },
+  { immediate: true }
+);
 </script>
 <template>
   <GridContainer>
@@ -161,7 +189,7 @@ watch(
     </UIFlexCard>
     <UIFlexCard>
       <UIDoubleBarChart
-        title="Offres / jour"
+        title="Offres VS Estimations / jour"
         :x-axis-data="offersXAxisData"
         :data-1="offersPerDay"
         :data-2="noOffersPerDay"
@@ -170,5 +198,8 @@ watch(
     <UIFlexCard
       ><UIGaugeChart title="Offre moyenne" :value="averageOffer"
     /></UIFlexCard>
+    <UIFlexCard>
+      <UIDonutChart title="Ancienneté" :data="ageRepartitionData" />
+    </UIFlexCard>
   </GridContainer>
 </template>

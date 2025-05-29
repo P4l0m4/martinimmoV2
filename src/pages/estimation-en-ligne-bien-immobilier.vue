@@ -173,12 +173,8 @@ onMounted(() => {
         class="estimation-en-ligne__map-container"
         v-show="!showDVFResults && address"
       >
-        <div
-          class="map"
-          v-if="mapSrc"
-          :style="{ backgroundImage: `url(${mapSrc})` }"
-          @load="mapLoaded = true"
-        ></div>
+        <img class="map" v-if="mapSrc" :src="mapSrc" @load="mapLoaded = true" />
+
         <div class="map-loader" v-if="!mapLoaded">
           <UICircularLoader :color="colors['accent-color']" />
         </div>
@@ -284,6 +280,7 @@ onMounted(() => {
     width: 100%;
     max-width: 550px;
     height: 420px;
+    min-height: 0;
     position: relative;
 
     @media (min-width: $big-tablet-screen) {
@@ -324,12 +321,13 @@ onMounted(() => {
       gap: 0.5rem;
       color: $text-color-alt;
       margin-top: -0.75rem;
+      height: fit-content;
     }
 
     .map {
       width: 100%;
-      height: 100%;
-      max-height: 380px;
+      flex: 1 1 auto;
+      min-height: 0;
       object-fit: cover;
       object-position: center;
       border-radius: 1.5rem;
