@@ -61,7 +61,7 @@ onMounted(() => {
     },
     series: [
       {
-        name: "Adresses",
+        name: props.title,
         type: "bar",
         data: props.seriesCounts,
         itemStyle: { color: colors["accent-color"] },
@@ -83,6 +83,7 @@ watch(
       },
       series: [
         {
+          type: "bar",
           data: props.seriesCounts,
         },
       ],

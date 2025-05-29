@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
 import { getAllDataFromDB } from "@/utils/supabaseFunctions";
+import type { SeriesData } from "@/components/UI/DoubleBarChart.vue";
 
 const data = ref<any[]>([]);
 
@@ -17,8 +18,8 @@ const CTAClicked = ref();
 const trialsData = ref<{ name: string; value: number }[]>([]);
 
 const offersXAxisData = ref<string[]>([]);
-const offersPerDay = ref<number[]>([]);
-const noOffersPerDay = ref<number[]>([]);
+const offersPerDay = ref<SeriesData>({ name: "", data: [] });
+const noOffersPerDay = ref<SeriesData>({ name: "", data: [] });
 
 const averageOffer = ref();
 
@@ -113,8 +114,15 @@ watch(
     ).sort();
 
     offersXAxisData.value = allDays;
-    offersPerDay.value = allDays.map((d) => mapWith.get(d) ?? 0);
-    noOffersPerDay.value = allDays.map((d) => mapWithout.get(d) ?? 0);
+
+    offersPerDay.value = {
+      name: "Avec offre",
+      data: allDays.map((d) => mapWith.get(d) ?? 0),
+    };
+    noOffersPerDay.value = {
+      name: "Sans offre",
+      data: allDays.map((d) => mapWithout.get(d) ?? 0),
+    };
   },
   { immediate: true }
 );
@@ -189,10 +197,10 @@ watch(
     </UIFlexCard>
     <UIFlexCard>
       <UIDoubleBarChart
-        title="Offres VS Estimations / jour"
+        title="Offres VS Estimations"
         :x-axis-data="offersXAxisData"
-        :data-1="offersPerDay"
-        :data-2="noOffersPerDay"
+        :series-1="offersPerDay"
+        :series-2="noOffersPerDay"
       />
     </UIFlexCard>
     <UIFlexCard

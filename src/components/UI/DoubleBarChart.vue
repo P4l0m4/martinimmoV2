@@ -4,13 +4,18 @@ import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import { useResizeObserver } from "@vueuse/core";
 import { colors } from "@/utils/colors";
 
+export interface SeriesData {
+  name: string;
+  data: number[];
+}
+
 const props = withDefaults(
   defineProps<{
     title: string;
     tooltip?: object;
     xAxisData: string[];
-    data1: number[];
-    data2: number[];
+    series1: SeriesData;
+    series2: SeriesData;
     width?: string;
     height?: string;
   }>(),
@@ -72,16 +77,13 @@ onMounted(() => {
     },
     series: [
       {
-        name: "Avec offre",
+        ...props.series1,
         type: "bar",
-        data: props.data1,
         itemStyle: { color: colors["accent-color"] },
       },
       {
-        name: "Sans offre",
+        ...props.series2,
         type: "bar",
-        stack: "total",
-        data: props.data2,
         itemStyle: { color: colors["accent-color-faded"] },
       },
     ],
@@ -93,11 +95,14 @@ onBeforeUnmount(() => {
 });
 
 watch(
-  () => [props.xAxisData, props.data1, props.data2],
+  () => [props.xAxisData, props.series1, props.series2],
   () => {
     chart.value?.setOption({
       xAxis: { data: props.xAxisData },
-      series: [{ data: props.data1 }, { data: props.data2 }],
+      series: [
+        { ...props.series1, type: "bar" },
+        { ...props.series2, type: "bar" },
+      ],
     });
   },
   { immediate: true }
