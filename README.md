@@ -1,6 +1,4 @@
-# Nuxt Minimal Starter
-
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+# See online at https://martinimmo.netlify.app
 
 ## Setup
 
