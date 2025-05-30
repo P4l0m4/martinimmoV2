@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import opgImg from "@/assets/images/opengraph_image.webp";
-
 useHead({
   title: "Vente urgente de biens immobiliers",
   meta: [
@@ -19,7 +17,8 @@ useHead({
     },
     {
       property: "og:url",
-      content: opgImg,
+      content:
+        "https://opengraph.b-cdn.net/production/images/0d54207b-5b60-4086-9160-a5b7df6bf2c6.jpg?token=iHNWoqdZlZfJaFO_MRtDAX6VyogK9vW0tj-ShcS9QsQ&height=982&width=968&expires=33284606311",
     },
     {
       property: "og:image",
