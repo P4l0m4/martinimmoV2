@@ -78,14 +78,10 @@
           <NuxtLink to="/faq">F.A.Q.</NuxtLink>
         </li>
         <li class="footer__links-container__links__li">
-          <NuxtLink to="/estimation-en-ligne-bien-immobilier"
-            >Qui sommes nous ?</NuxtLink
-          >
+          <NuxtLink to="/faq">Qui sommes nous ?</NuxtLink>
         </li>
         <li class="footer__links-container__links__li">
-          <NuxtLink to="/estimation-en-ligne-bien-immobilier"
-            >Comment ça marche ?</NuxtLink
-          >
+          <NuxtLink to="/faq">Comment ça marche ?</NuxtLink>
         </li>
       </ul>
       <div class="footer__links-container__special-box">

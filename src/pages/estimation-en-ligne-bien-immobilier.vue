@@ -216,7 +216,7 @@ onMounted(() => {
       <div v-if="!address" class="estimation-en-ligne__wrapper">
         <h1 class="titles">Estimez votre bien en un clic</h1>
         <h2 class="subtitles">
-          Entrez l'adresse de votre bien pour obtenir une offre instantanée
+          Entrez l'adresse de votre bien pour obtenir une offre instantanée ⚡
         </h2>
         <Transition
           ><LocationForm
