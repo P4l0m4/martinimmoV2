@@ -20,9 +20,9 @@ const questions = [
       "Aucune offre n'est définitive tant que le bien n'a pas été visité par un professionnel. L'estimation est indicative et peut varier en fonction de l'état et la situation réels du bien.",
   },
   {
-    title: "A quoi sert MartinImmo ?",
+    title: "A quoi sert Martinimmo ?",
     answer:
-      "MartinImmo facilite la vente de biens immobiliers grâce à des fonctionnalités permettant une véritable simplicité documentaire et une liquidité particulièrement rapide. ",
+      "Nous avons conçu Martinimmo pour simplifier la vente de biens immobiliers. C'est une solution digitale qui fluidifie au maximum le processus de vente pour que vous récupériez votre argent ultra rapidement.",
   },
 
   {
@@ -34,6 +34,16 @@ const questions = [
     title: "J'ai un problème sur le site, que faire ?",
     answer:
       "Vous pouvez nous contacter par mail à l'adresse tekilawebfactory@gmail.com.",
+  },
+  {
+    title: "Comment ça marche ?",
+    answer:
+      "Vous pouvez estimer votre bien en ligne, obtenir une offre d'achat instantanément et finaliser la vente en toute simplicité et très rapidement.",
+  },
+  {
+    title: "A qui s'adresse Martinimmo ?",
+    answer:
+      "Martinimmo s'adresse à tous les propriétaires de biens immobiliers qui souhaitent vendre rapidement et facilement, sans les tracas des méthodes traditionnelles.",
   },
 ];
 </script>
@@ -65,6 +75,7 @@ const questions = [
   }
 
   @media (min-width: $laptop-screen) {
+    gap: 8rem;
     padding: 4rem;
   }
 }
