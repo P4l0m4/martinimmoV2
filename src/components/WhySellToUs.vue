@@ -50,8 +50,10 @@ const claims = [
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 2rem;
   color: $text-color-alt;
+  min-height: 100svh;
 
   @media (min-width: $big-tablet-screen) {
     gap: 4rem;

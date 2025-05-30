@@ -29,11 +29,30 @@ echarts.use([GeoComponent, ScatterChart, CanvasRenderer]);
 const container = ref<HTMLDivElement | null>(null);
 let chart: echarts.ECharts;
 
-useResizeObserver(container, () => chart.resize());
+const initialZoom = ref(1);
+const initialCenter = ref([2.454071, 46.603354]);
+
+useResizeObserver(container, () => chart?.resize());
 
 onClickOutside(container, () => {
-  chart?.dispatchAction({
-    type: "restore",
+  chart?.setOption({
+    geo: {
+      zoom: initialZoom.value,
+      center: initialCenter.value,
+    },
+    series: [
+      {
+        name: "Adresses",
+        type: "scatter",
+        coordinateSystem: "geo",
+        data: props.points.map((p) => ({
+          name: p.name,
+          value: [...p.coords, 1],
+        })),
+        symbolSize: 8,
+        itemStyle: { color: colors["primary-color"] },
+      },
+    ],
   });
 });
 

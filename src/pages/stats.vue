@@ -28,6 +28,8 @@ const ageRepartitionData = ref<{ name: string; value: number }[]>([]);
 
 const mapPoints = ref<Point[]>([]);
 
+const averageRating = ref(0);
+
 onMounted(async () => {
   data.value = await getAllDataFromDB();
   console.log(data.value);
@@ -184,6 +186,21 @@ watch(
   },
   { immediate: true }
 );
+
+watch(
+  data,
+  () => {
+    const ratings = data.value.map((r) => r.rating).filter((r) => r !== null);
+    if (ratings.length > 0) {
+      averageRating.value = Math.round(
+        ratings.reduce((sum, r) => sum + r, 0) / ratings.length
+      );
+    } else {
+      averageRating.value = 0;
+    }
+  },
+  { immediate: true }
+);
 </script>
 <template>
   <GridContainer>
@@ -192,7 +209,7 @@ watch(
     </UIFlexCard>
     <UIFlexCard>
       <UIBarChart
-        title="Adresses / jour"
+        title="Adresses / jour 📅"
         :series-counts="addressesPerDaySeriesCounts"
         :x-axis-data="addressesPerDayXAxisData"
       />
@@ -213,7 +230,7 @@ watch(
       <UIFranceMap :points="mapPoints" />
     </UIFlexCard>
     <UIFlexCard>
-      <UIDonutChart title="Essais" :data="trialsData" />
+      <UIDonutChart title="Essais 🧪" :data="trialsData" />
     </UIFlexCard>
     <UIFlexCard>
       <UIDoubleBarChart
@@ -224,10 +241,13 @@ watch(
       />
     </UIFlexCard>
     <UIFlexCard
-      ><UIGaugeChart title="Offre moyenne" :value="averageOffer"
+      ><UIGaugeChart title="Offre moyenne 💰" :value="averageOffer"
     /></UIFlexCard>
     <UIFlexCard>
-      <UIDonutChart title="Ancienneté" :data="ageRepartitionData" />
+      <UIDonutChart title="Ancienneté 🕸️" :data="ageRepartitionData" />
+    </UIFlexCard>
+    <UIFlexCard>
+      <UICounter title="Note moyenne ⭐" :count="averageRating" />
     </UIFlexCard>
   </GridContainer>
 </template>
