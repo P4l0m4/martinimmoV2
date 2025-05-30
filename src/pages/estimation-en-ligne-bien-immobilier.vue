@@ -165,6 +165,17 @@ onMounted(() => {
 
   address.value = store.readFromLocalStorage();
 });
+
+useHead({
+  title: "Estimation en ligne de votre bien immobilier",
+  meta: [
+    {
+      name: "description",
+      content:
+        "Vous souhaitez savoir combien vaut votre appartement ou maison ? En seulement 30s, découvrez combien vaut votre Bien Immo. Gratuit et Sans engagement.",
+    },
+  ],
+});
 </script>
 <template>
   <Container>

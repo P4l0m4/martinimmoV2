@@ -6,9 +6,8 @@ const emits = defineEmits<{
   (e: "rating", value: number): void;
 }>();
 
-// valeur définitive après clic
 const rating = ref(0);
-// valeur pendant le survol
+
 const hoverValue = ref<number | null>(null);
 
 const totalStars = 5;

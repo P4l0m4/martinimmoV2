@@ -1,3 +1,15 @@
+<script setup lang="ts">
+useHead({
+  title: "Qui sommes-nous ? Martinimmo, vente rapide de biens immobiliers",
+  meta: [
+    {
+      name: "description",
+      content:
+        "Spécialiste de la vente immobilièe accélérée, estimez votre bien en ligne et vendez nous votre appartement ou maison en un temps reccord.",
+    },
+  ],
+});
+</script>
 <template>
   <section class="contact">
     <h1 class="titles">Qui Sommes Nous ?</h1>

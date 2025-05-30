@@ -435,9 +435,12 @@ watch(
           @keydown.space="triggerPopUp('agent')"
           >Être recontacté par un agent</PrimaryButton
         >
-        <button class="dvf-results__estimate__external-contact__button">
+        <NuxtLink
+          to="/faq"
+          class="dvf-results__estimate__external-contact__button"
+        >
           Politique d'achat
-        </button>
+        </NuxtLink>
       </div>
     </div>
 

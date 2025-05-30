@@ -46,6 +46,17 @@ const questions = [
       "Martinimmo s'adresse à tous les propriétaires de biens immobiliers qui souhaitent vendre rapidement et facilement, sans les tracas des méthodes traditionnelles.",
   },
 ];
+
+useHead({
+  title: "Foire aux questions - Vente accélérée de biens immobiliers",
+  meta: [
+    {
+      name: "description",
+      content:
+        "Découvrez les réponses aux questions fréquentes sur la vente de biens immobiliers avec Martinimmo. Estimez votre bien, obtenez une offre d'achat et vendez rapidement.",
+    },
+  ],
+});
 </script>
 <template>
   <section class="faq">

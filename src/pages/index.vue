@@ -1,3 +1,38 @@
+<script setup lang="ts">
+import opgImg from "@/assets/images/opengraph_image.webp";
+
+useHead({
+  title: "Vente rapide de votre bien immobilier",
+  meta: [
+    {
+      name: "description",
+      content:
+        "Spécialiste de la vente urgente d'appartements et maisons, Martinimmo vous propose une offre d'achat instantanée et une transaction ultra rapide.",
+    },
+    {
+      property: "og:type",
+      content: "website",
+    },
+    {
+      property: "og:title",
+      content: "Vente rapide de votre bien immobilier",
+    },
+    {
+      property: "og:url",
+      content: opgImg,
+    },
+    {
+      property: "og:image",
+      content: "https://martinimmo.n/og-image.jpg",
+    },
+    {
+      property: "og:description",
+      content:
+        "Spécialiste de la vente urgente d'appartements et maisons, Martinimmo vous propose une offre d'achat instantanée et une transaction ultra rapide.",
+    },
+  ],
+});
+</script>
 <template>
   <div class="background">
     <Transition>
@@ -30,6 +65,7 @@
       <UISteps />
     </Container>
   </div>
+  <Container><WhySellToUs /></Container>
 </template>
 <style lang="scss" scoped>
 .background {
