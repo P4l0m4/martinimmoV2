@@ -2,7 +2,7 @@
 import opgImg from "@/assets/images/opengraph_image.webp";
 
 useHead({
-  title: "Vente rapide de votre bien immobilier",
+  title: "Vente urgente de biens immobiliers",
   meta: [
     {
       name: "description",
@@ -15,7 +15,7 @@ useHead({
     },
     {
       property: "og:title",
-      content: "Vente rapide de votre bien immobilier",
+      content: "Vente urgente de biens immobiliers",
     },
     {
       property: "og:url",
