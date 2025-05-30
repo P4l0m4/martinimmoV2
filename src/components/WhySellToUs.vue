@@ -36,7 +36,7 @@ const claims = [
       </div>
     </div>
     <div class="why-sell-to-us__cta">
-      <NuxtLink to="/estimation-en-ligne"
+      <NuxtLink to="/estimation-en-ligne-bien-immobilier"
         ><PrimaryButton variant="accent-color"
           >Découvrir combien vaut votre bien</PrimaryButton
         ></NuxtLink
