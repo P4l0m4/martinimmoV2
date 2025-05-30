@@ -22,5 +22,5 @@ export function formattedValue(value: number) {
     currency: "EUR",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(Math.round(value)); // ← on retourne le résultat
+  }).format(Math.round(value));
 }

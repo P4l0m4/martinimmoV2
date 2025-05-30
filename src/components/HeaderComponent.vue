@@ -7,7 +7,7 @@
         </li>
         <li class="header__nav__ul__li">
           <NuxtLink to="/estimation-en-ligne-bien-immobilier" exact
-            >Vendre mon bien</NuxtLink
+            >Obtenir une offre d'achat</NuxtLink
           >
         </li>
       </ul>

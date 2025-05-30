@@ -48,7 +48,7 @@
         </li>
         <li class="footer__links-container__links__li">
           <NuxtLink to="/estimation-en-ligne-bien-immobilier"
-            >Leasing immobilier</NuxtLink
+            >Obtenir une offre d'achat</NuxtLink
           >
         </li>
       </ul>
@@ -78,7 +78,7 @@
           <NuxtLink to="/faq">F.A.Q.</NuxtLink>
         </li>
         <li class="footer__links-container__links__li">
-          <NuxtLink to="/faq">Qui sommes nous ?</NuxtLink>
+          <NuxtLink to="/contact">Qui sommes nous ?</NuxtLink>
         </li>
         <li class="footer__links-container__links__li">
           <NuxtLink to="/faq">Comment ça marche ?</NuxtLink>
