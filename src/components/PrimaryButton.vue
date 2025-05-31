@@ -81,7 +81,14 @@ const iconColor = computed(() => {
   border-radius: $radius;
   font-weight: $regular;
   transition: background-color 0.3s linear, color 0.3s linear,
-    border-color 0.3s linear;
+    border-color 0.3s linear, transform 0.2s linear, box-shadow 0.2s linear;
+
+  @media (min-width: $big-tablet-screen) {
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+  }
 }
 
 .icon-wrapper {
