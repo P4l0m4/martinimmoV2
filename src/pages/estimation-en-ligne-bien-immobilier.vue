@@ -24,6 +24,7 @@ const isAdressInDowntown = ref(false);
 const equipments = ref<string[]>([]);
 const discalifications = ref<string[]>([]);
 const groundFloor = ref(false);
+const land = ref(0);
 
 const mapLoaded = ref(false);
 
@@ -125,6 +126,7 @@ async function dataFromEstimationForm(data: {
   equipments: string[];
   discalifications: string[];
   groundFloor: boolean;
+  land: number;
 }) {
   surface.value = data.surface;
   surfaceHabitable.value = data.surface;
@@ -136,6 +138,7 @@ async function dataFromEstimationForm(data: {
   equipments.value = [...data.equipments];
   discalifications.value = [...(data.discalifications ?? [])];
   groundFloor.value = data.groundFloor;
+  land.value = data.land;
   showDVFResults.value = true;
 
   await updateEstimationFormInfo(address.value, {
@@ -149,6 +152,7 @@ async function dataFromEstimationForm(data: {
     equipments: data.equipments,
     discalifications: data.discalifications,
     ground_floor: data.groundFloor,
+    land: data.land,
   });
 
   await incrementAmountOfTrials(address.value);
@@ -237,9 +241,8 @@ useHead({
         /></Transition>
       </div>
 
-      <Transition
-        ><EstimationForm v-if="showForm" @submit="dataFromEstimationForm"
-      /></Transition>
+      <EstimationForm v-if="showForm" @submit="dataFromEstimationForm" />
+
       <Transition
         ><DVFResults
           v-if="showDVFResults"
@@ -255,6 +258,7 @@ useHead({
           :isDownTown="isAdressInDowntown"
           :discalifications="discalifications"
           :groundFloor="groundFloor"
+          :land="land"
           @redoEstimate="showDVFResults = false"
       /></Transition>
     </div>

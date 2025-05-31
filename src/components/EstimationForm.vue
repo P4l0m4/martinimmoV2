@@ -22,6 +22,7 @@ const emit = defineEmits<{
       equipments: string[];
       discalifications: string[];
       groundFloor: boolean;
+      land: number;
     }
   ];
 }>();
@@ -92,6 +93,7 @@ const form = reactive({
   ),
   localAge: undefined as string | undefined,
   groundFloor: false as Boolean,
+  land: null as number | null,
 });
 
 const rules = {
@@ -117,6 +119,7 @@ const rules = {
   typeLocal: { required },
   DPE: { required },
   localAge: { required },
+  land: { numeric, minValue: minValue(0) },
 };
 
 const v$ = useVuelidate(rules, form);
@@ -192,6 +195,15 @@ const localAgeErrors = computed(() => {
   return e;
 });
 
+const landErrors = computed(() => {
+  const e: string[] = [];
+  if (!v$.value.land.$dirty) return e;
+  if (v$.value.land.numeric.$invalid)
+    e.push("La surface terrain doit être numérique");
+  if (v$.value.land.minValue.$invalid) e.push("Surface minimale : 0 m²");
+  return e;
+});
+
 const visibleCheckboxes = computed(() =>
   checkboxOptions.filter(
     (o) => !form.typeLocal || o.belongsTo.includes(form.typeLocal)
@@ -214,10 +226,13 @@ async function checkStep0Validation() {
   await Promise.all([
     v$.value.typeLocal.$validate(),
     v$.value.expectedRenovationDiscount.$validate(),
+    v$.value.land.$validate(),
   ]);
 
   const areFieldsValid = !(
-    v$.value.typeLocal.$invalid || v$.value.expectedRenovationDiscount.$invalid
+    v$.value.typeLocal.$invalid ||
+    v$.value.expectedRenovationDiscount.$invalid ||
+    v$.value.land.$invalid
   );
 
   if (areFieldsValid) {
@@ -225,6 +240,7 @@ async function checkStep0Validation() {
   } else {
     v$.value.typeLocal.$touch();
     v$.value.expectedRenovationDiscount.$touch();
+    v$.value.land.$touch();
   }
 }
 
@@ -244,6 +260,7 @@ async function handleSubmit() {
     equipments: selectedEquipments.value,
     discalifications: selectedDiscalifications.value,
     groundFloor: form.groundFloor,
+    land: form.land,
   });
 }
 </script>
@@ -305,6 +322,18 @@ async function handleSubmit() {
       name="groundFloor"
       label="Situé en rez-de-chaussée"
       v-model="form.groundFloor"
+    />
+
+    <InputField
+      v-if="form.typeLocal === 'Maison'"
+      id="land"
+      name="land"
+      label="Surface du terrain"
+      placeholder="Surface du terrain en m²"
+      type="number"
+      v-model="form.land"
+      :error="landErrors[0]"
+      icon="farm"
     />
 
     <PrimaryButton

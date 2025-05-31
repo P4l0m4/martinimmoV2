@@ -26,6 +26,7 @@ interface Props {
   equipments?: string[];
   discalifications: string[];
   groundFloor: boolean;
+  land?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -44,11 +45,13 @@ interface DvfRecord {
   surface_reelle_bati: number | null;
   nombre_pieces_principales: number | null;
   valeur_fonciere: number | null;
+  type_local: string | null;
+  surface_terrain: number | null;
 }
 
+const records = ref<DvfRecord[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
-const records = ref<DvfRecord[]>([]);
 
 const store = useAddressStore();
 const address = store.readFromLocalStorage();
@@ -69,8 +72,15 @@ function buildUrl(year?: string, limit = props.limit) {
 
   if (props.postalCode) p.append("refine", `code_postal:"${props.postalCode}"`);
   if (year) p.append("refine", `date_mutation:"${year}"`);
-  // if (props.surface) p.append("refine", `surface_reelle_bati:${props.surface}`);
-  if (props.typeLocal) p.append("refine", `type_local:"${props.typeLocal}"`);
+
+  if (props.typeLocal) {
+    p.append("refine", `type_local:"${props.typeLocal}"`);
+    if (props.land && props.land > 0) {
+      p.append("where", "surface_terrain > 0");
+    } else {
+      p.append("where", "surface_terrain IS NULL");
+    }
+  }
   if (props.rooms)
     p.append("refine", `nombre_pieces_principales:${props.rooms}`);
 
@@ -104,6 +114,8 @@ async function fetchData() {
   } finally {
     loading.value = false;
   }
+
+  console.log("Records fetched:", records.value);
 }
 
 function triggerPopUp(type: "visit" | "agent") {
@@ -228,7 +240,7 @@ const renovationFactor = computed(
 );
 const dpeFactor = computed(() => 1 + dpePct.value / 100);
 const downtownFactor = computed(() => (props.isDownTown ? 1.2 : 1));
-const marginFactor = computed(() => 1 - 15 / 100);
+const marginFactor = computed(() => 1 - 17 / 100);
 
 const estimatedValue = computed(() => {
   if (!marketValue.value) return null;
@@ -325,6 +337,7 @@ watch(
               size="2rem"
             />
           </span>
+          <SkeletonsSkeleton v-else :height="60" />
           <PrimaryButton
             variant="accent-color"
             icon="calendar_dots_fill"
@@ -398,6 +411,7 @@ watch(
             size="2rem"
           />
         </span>
+        <SkeletonsSkeleton v-else :height="60" />
         <button
           class="dvf-results__estimate__wrapper__button"
           @click="$emit('redoEstimate')"

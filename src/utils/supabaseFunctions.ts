@@ -58,6 +58,7 @@ export async function updateEstimationFormInfo(
       DPE: payload.DPE ?? null,
       local_age: payload.local_age ?? null,
       ground_floor: payload.ground_floor,
+      land: payload.land,
       equipments: payload.equipments ?? null,
       disqualifications: payload.discalifications ?? null,
     })

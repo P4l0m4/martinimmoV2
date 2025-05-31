@@ -17,15 +17,15 @@ defineProps<{
 <style scoped lang="scss">
 .skeleton {
   display: flex;
-  border-radius: $radius;
+  border-radius: calc($radius/2);
   width: 100%;
   height: 100%;
   min-height: 40px;
   background: linear-gradient(
-    90deg,
-    rgba(128, 128, 128, 0.1) 50%,
-    $base-color,
-    rgba(128, 128, 128, 0.1) 55%
+    135deg,
+    rgba($accent-color, 0.1) 50%,
+    $primary-color-faded,
+    rgba($accent-color, 0.1) 55%
   );
   background-size: 400%;
   animation: moveBackground 2s ease-in infinite;

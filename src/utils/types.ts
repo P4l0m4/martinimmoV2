@@ -55,14 +55,7 @@ export interface EstimationFormInfo {
   DPE?: string | null;
   local_age?: string | null;
   ground_floor?: boolean | null;
+  land: number;
   equipments?: string[] | null; // tableau → jsonb
   discalifications?: string[] | null; // tableau → jsonb
-}
-
-// series provided to the bar chart
-export interface BarSeriesItem {
-  name: string;
-  type: "bar";
-  data: number[];
-  itemStyle: { color: string };
 }
