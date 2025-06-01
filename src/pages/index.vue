@@ -57,7 +57,7 @@ useHead({
           Vendez votre bien immobilier sans attendre
         </h1>
         <h2 class="headlines__text__subtitle">
-          Offre instantanée, transaction la plus rapide du marché ⚡
+          Offre instantanée. Transaction la plus rapide du marché ⚡
         </h2>
       </div>
       <LocationForm />

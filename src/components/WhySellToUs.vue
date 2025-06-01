@@ -13,7 +13,7 @@ const claims = [
   {
     title: "Spécialiste des ventes urgentes",
     details:
-      "Avec nous, pas de perte de temps avec les visites, les négociations de prix, le notaire et les annonces en ligne. Nous achetons votre bien en un temps reccords et simplifions le processus de vente au maximum.",
+      "Avec nous, pas de perte de temps avec les visites, les négociations de prix, le notaire et les annonces en ligne. Nous achetons votre bien en un temps reccord et simplifions le processus de vente au maximum.",
   },
   {
     title: "On se charge de tout",
@@ -74,7 +74,7 @@ const claims = [
       gap: 1rem;
 
       .subtitles {
-        color: $accent-color;
+        color: $primary-color;
       }
     }
   }
