@@ -67,7 +67,12 @@ onMounted(() => {
         data: props.data.map((d, i) => ({
           ...d,
           itemStyle: {
-            color: [colors["accent-color"], colors["accent-color-faded"]][i],
+            color: [
+              colors["base-color"],
+              colors["accent-color"],
+              colors["gold-color"],
+              colors["warning-color"],
+            ][i],
           },
         })),
       },
