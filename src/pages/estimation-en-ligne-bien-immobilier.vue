@@ -164,6 +164,15 @@ watch(address, async () => {
   }
 });
 
+watch(
+  () => showDVFResults.value,
+  (newValue) => {
+    if (newValue) {
+      window.scrollTo(0, 0);
+    }
+  }
+);
+
 onMounted(() => {
   window.scrollTo(0, 0);
 
