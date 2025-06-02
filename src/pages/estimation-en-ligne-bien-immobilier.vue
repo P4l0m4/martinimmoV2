@@ -210,7 +210,6 @@ useHead({
           @keydown.space="clearLocalStorageAndRefresh"
           tabindex="0"
           aria-label="Cliquez pour changer l'adresse"
-          role="button"
         >
           {{ address.properties.label }}
 
